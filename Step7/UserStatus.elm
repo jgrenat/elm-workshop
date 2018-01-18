@@ -1,7 +1,7 @@
 module Step7.UserStatus exposing (..)
 
-import Html exposing (Html, a, beginnerProgram, div, h1, iframe, input, li, p, text, ul)
-import Html.Attributes exposing (class, href, selected, src, style, type_)
+import Html exposing (Html, a, beginnerProgram, div, h1, iframe, input, label, li, p, span, text, ul)
+import Html.Attributes exposing (class, for, href, id, selected, src, style, type_, name)
 import Html.Events exposing (onClick)
 
 
@@ -37,7 +37,7 @@ view : UserStatus -> Html Msg
 view userStatus =
     div []
         [ div [ class "jumbotron" ]
-            [ userStatusForm
+            [ userStatusForm userStatus
             , p [] [ message userStatus ]
             ]
         , displayTests
@@ -51,8 +51,22 @@ Once you have changed the UserStatus type, you can change the messages here
 userStatusForm : UserStatus -> Html Msg
 userStatusForm userStatus =
     div [ class "mb-3" ]
-        [ input [ type_ "radio", onClick (UserStatusSelected ModifyThisType) ] [ text "I'm underage" ]
-        , input [ type_ "radio", onClick (UserStatusSelected ModifyThisType) ] [ text "I'm an adult!" ]
+        [ input
+            [ id "underage"
+            , name "status"
+            , type_ "radio"
+            , onClick (UserStatusSelected ModifyThisType)
+            ]
+            [ text "I'm underage" ]
+        , label [ class "mr-3", for "underage" ] [ text "I'm underage" ]
+        , input
+            [ id "adult"
+            , name "status"
+            , type_ "radio"
+            , onClick (UserStatusSelected ModifyThisType)
+            ]
+            [ text "I'm an adult!" ]
+        , label [ for "adult" ] [ text "I'm an adult" ]
         ]
 
 
@@ -65,12 +79,13 @@ message userStatus =
             text "Personnalize the message according to the user status"
 
 
-{-| Update the model according to the Msg received.
-A case...of will be useful here!
+{-| Update the model according to the message received
 -}
 update : Msg -> UserStatus -> UserStatus
-update userStatus =
-    userStatus
+update message userStatus =
+    case message of
+        UserStatusSelected newUserStatus ->
+            userStatus
 
 
 

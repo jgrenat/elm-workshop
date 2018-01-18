@@ -74,7 +74,9 @@ view model =
 
 Avant de mettre en place cette architecture sur notre page de catégories, un peu de pratique avec un exemple plus simple : une page demandant si l'utilisateur est majeur ou non et qui affiche un message correspondant.
 
-Un exemple de l'application peut être trouvé ici : TODO
+<img alt="The Elm Architecture illustration" src="../images/step7-tea.png" style="width: 100%; border: 1px solid black;">
+
+Un exemple de l'application [peut être trouvé ici](https://underage-or-adult.surge.sh/).
 
 
 ### Modèle 
@@ -119,6 +121,12 @@ displayShirtSize size =
 ### Messages
 
 Un [union type](https://guide.elm-lang.org/types/union_types.html) `Msg` est déjà défini contenant le seul message qu'on a à gérer, `UserStatusSelected`, qui prend en argument un `UserStatus`, un autre union type défini par nous.
+
+
+## Update et View
+
+Ces deux fonctions ont été créées mais nécessitent quelques changements, à vous de faire passer les tests !
+
 
 ## Let's start!
 

@@ -35,7 +35,7 @@ En revanche, il s'agit d'un langage fonctionnel, et il permet donc d'effectuer d
 
 En y réfléchissant, c'est exactement ce qu'on veut faire ! Transformer notre liste de `Category` en listes de `li` correspondant à la catégorie ! 
 
-Une fois cette liste transformée, on peut directement l'utilisée comme second argument d'une fonction `ul` pour obtenir le rendu souhaité.
+Une fois cette liste transformée, on peut directement l'utiliser comme second argument d'une fonction `ul` pour obtenir le rendu souhaité.
 
 La fonction permettant de transformer notre liste est `List.map` et vous pouvez [trouver sa documentation ici](http://package.elm-lang.org/packages/elm-lang/core/latest/List#map). Comme vous pouvez le voir, `List.map` attend en premier argument une fonction de transformation, et en second argument la liste :
 
