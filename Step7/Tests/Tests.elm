@@ -55,7 +55,8 @@ whenFirstRadioButtonIsClickedUserShouldBeUnderage =
             in
                 Expect.all
                     [ \result ->
-                        Result.map (Query.has [ text "You are underage" ]) result
+                        result
+                            |> Result.map (Query.has [ text "You are underage" ])
                             |> Result.withDefault (Expect.fail "\"You are underage\" should be present")
                     , \result ->
                         Result.map (Query.hasNot [ text "You are an adult" ]) result
@@ -72,8 +73,6 @@ whenSecondRadioButtonIsClickedUserShouldBeAdult =
                 messageTriggered =
                     view initialModel
                         |> Query.fromHtml
-                        |> Query.findAll [ attribute (type_ "radio") ]
-                        |> Query.index 1
                         |> Event.simulate Event.click
                         |> Event.toResult
 

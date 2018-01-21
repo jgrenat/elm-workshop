@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 
 
 {-| This line creates a program with everything it needs (see the README)
+You don't need to modify it.
 -}
 main =
     beginnerProgram { model = initialModel, view = view, update = update }
