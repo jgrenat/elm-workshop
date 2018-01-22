@@ -32,7 +32,7 @@ Il vous faudra d'abord créer une requête avec la fonction [Http.getString](htt
 Une fois cela fait, vous pouvez créer une Command avec la méthode [Http.send](http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#send). 
 Pour cette fonction, le premier argument est de type `Result Error String -> Msg`, soit une fonction qui prend un `Result Error String` en argument et retourne un message. Ca tombe bien, c'est exactement la signature de notre constructeur de message `OnCategoriesFetched` !
 
-Petite aide : le type `Result error a` est défini dans le module `Result` de la façon suivante :
+Petite aide : le type `Result error value` est défini dans le module `Result` de la façon suivante :
 
 ```elm
 type Result error value

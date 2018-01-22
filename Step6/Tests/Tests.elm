@@ -18,6 +18,7 @@ main =
         , everyCategoriesAreDisplayed
         , eachCategoryHasItsNameDisplayed
         , replayLinkShouldHaveProperClasses
+        , replayLinkShouldHaveProperLink
         ]
         |> run
 
@@ -63,6 +64,16 @@ eachCategoryHasItsNameDisplayed =
 
 replayLinkShouldHaveProperClasses : Test
 replayLinkShouldHaveProperClasses =
+    test "Each link has the classes \"btn btn-primary\"" <|
+        \() ->
+            categoriesPage
+                |> Query.fromHtml
+                |> Query.findAll [ tag "a" ]
+                |> Query.each (Query.has [ classes [ "btn", "btn-primary" ] ])
+
+
+replayLinkShouldHaveProperLink : Test
+replayLinkShouldHaveProperLink =
     fuzz (intRange 0 22) "Each category have the proper link" <|
         \index ->
             let
