@@ -1,12 +1,11 @@
-module Step10.CategoriesPage exposing (..)
+module Step09.CategoriesPage exposing (..)
 
 import Testable
 import Testable.Cmd
-import Testable.Html exposing (Html, a, button, div, h1, iframe, li, program, text, ul)
-import Testable.Html.Attributes exposing (class, href, src, style)
+import Testable.Html exposing (Html, button, div, h1, iframe, program, text)
+import Testable.Html.Attributes exposing (class, src, style)
 import Testable.Http as Http
 import Result exposing (Result)
-import Json.Decode as Decode
 
 
 main : Program Never Model Msg
@@ -15,7 +14,7 @@ main =
 
 
 type alias Model =
-    { categories : RemoteData (List Category)
+    { categories : RemoteData String
     }
 
 
@@ -37,20 +36,13 @@ type RemoteData a
 
 init : ( Model, Testable.Cmd.Cmd Msg )
 init =
-    ( Model Loading, Http.send OnCategoriesFetched getCategoriesRequest )
-
-
-getCategoriesRequest =
-    Http.getString "https://opentdb.com/api_category.php"
+    ( Model Loading, Testable.Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Testable.Cmd.Cmd Msg )
 update msg model =
     case msg of
-        OnCategoriesFetched (Err error) ->
-            ( Model OnError, Testable.Cmd.none )
-
-        OnCategoriesFetched (Ok categories) ->
+        OnCategoriesFetched _ ->
             ( model, Testable.Cmd.none )
 
 
@@ -58,32 +50,8 @@ view : Model -> Testable.Html.Html Msg
 view model =
     div []
         [ h1 [] [ text "Play within a given category" ]
-        , case model.categories of
-            Loading ->
-                text "Loading the categories..."
-
-            OnError ->
-                text "An error occurred while loading the categories"
-
-            Loaded categories ->
-                displayCategories categories
+        , text "Loading the categories..."
         ]
-
-
-displayCategories : List Category -> Testable.Html.Html msg
-displayCategories categories =
-    ul [ class "categories" ] (List.map displayCategory categories)
-
-
-displayCategory : Category -> Testable.Html.Html msg
-displayCategory category =
-    let
-        link =
-            "#game/category/" ++ (toString category.id)
-    in
-        li []
-            [ a [ class "btn btn-primary", href link ] [ text category.name ]
-            ]
 
 
 

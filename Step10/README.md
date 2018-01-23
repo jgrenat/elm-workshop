@@ -41,7 +41,8 @@ Alors comment utiliser ce décodeur ensuite ? En se servant de la fonction [`dec
 ```elm
 jsonString : String
 jsonString =
-    -- Triple quotes is for multi-line String and with that we don't have to escape single quotes 
+    -- Triple quotes is for multi-line String and with
+    -- that we don't have to escape single quotes
     """{ firstname: "John", lastname: "Doe", birthYear: 1987 }"""
 
 decodedUser : Result String User
