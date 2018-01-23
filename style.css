@@ -2,12 +2,6 @@ body {
     text-align: center;
 }
 
-.container {
-    max-width: 90vw;
-    margin: auto;
-    text-align: center;
-}
-
 h1 {
     margin-bottom: 5vh;
 }
@@ -61,4 +55,10 @@ h1 {
 
 .answers a.btn {
     color: white;
+}
+
+
+/*Trick to avoid elm-reactor errors to be centered, which is really not readable...*/
+div [style="display: block; white-space: pre; background-color: rgb(39, 40, 34); padding: 2em;"] {
+    text-align: left;
 }
