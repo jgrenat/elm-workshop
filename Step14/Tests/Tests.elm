@@ -3,7 +3,6 @@ module Step14.Tests.Tests exposing (..)
 import Fuzz exposing (intRange)
 import Http exposing (Error(NetworkError))
 import Step14.Main exposing (Msg(OnCategoriesFetched, OnLocationChange), categoriesDecoder, init, update, view)
-import Step14.GamePage exposing (questionsDecoder)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, text)
 import Test.Html.Event exposing (simulate, toResult, click)
