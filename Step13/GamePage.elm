@@ -38,7 +38,7 @@ type alias Game =
 
 
 type Msg
-    = OnQuestionsFetched (Result Http.Error (List Question))
+    = None
 
 
 type alias Category =
@@ -55,58 +55,19 @@ type RemoteData a
 
 init : ( Model, Testable.Cmd.Cmd Msg )
 init =
-    ( Model Loading, getQuestionsCmd )
+    ( Model Loading, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Testable.Cmd.Cmd Msg )
 update message model =
     case message of
-        OnQuestionsFetched (Ok []) ->
-            ( model, getQuestionsCmd )
-
-        OnQuestionsFetched (Ok (currentQuestion :: remainingQuestions)) ->
-            ( Model (Loaded (Game currentQuestion remainingQuestions)), Testable.Cmd.none )
-
-        OnQuestionsFetched (Err _) ->
-            ( Model OnError, Testable.Cmd.none )
-
-
-getQuestionsCmd : Testable.Cmd.Cmd Msg
-getQuestionsCmd =
-    Http.send OnQuestionsFetched getQuestionsRequest
-
-
-getQuestionsRequest : Http.Request (List Question)
-getQuestionsRequest =
-    Http.get questionsUrl questionsDecoder
-
-
-questionsDecoder : Decode.Decoder (List Question)
-questionsDecoder =
-    Decode.field "results" (Decode.list questionDecoder)
-
-
-questionDecoder : Decode.Decoder Question
-questionDecoder =
-    Decode.map3 Question (Decode.field "question" Decode.string) (Decode.field "correct_answer" Decode.string) answersDecoder
-
-
-answersDecoder : Decode.Decoder (List String)
-answersDecoder =
-    Decode.map2 (::) (Decode.field "correct_answer" Decode.string) (Decode.field "incorrect_answers" (Decode.list Decode.string))
+        None ->
+            ( model, Cmd.none )
 
 
 view : Model -> Testable.Html.Html Msg
 view model =
-    case model.game of
-        Loading ->
-            text "Loading the questions..."
-
-        OnError ->
-            text "An unknown error occurred while loading the questions."
-
-        Loaded game ->
-            div [] [ gamePage game.currentQuestion ]
+    div [] [ text "Content of the page" ]
 
 
 gamePage : Question -> Html msg
