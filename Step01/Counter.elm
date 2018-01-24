@@ -10,7 +10,7 @@ main =
 
 type Msg
     = Increment
-    | Decrement -- 2) Then something below
+    | Decrement
 
 
 update msg model =
@@ -27,6 +27,4 @@ view model =
         [ button [ onClick Decrement ] [ text "-" ]
         , span [] [ text (toString model) ]
         , button [ onClick Increment ] [ text "+" ]
-
-        -- 1) First you need to add the button here
         ]
