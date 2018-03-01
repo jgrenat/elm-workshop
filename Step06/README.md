@@ -31,9 +31,9 @@ On a déjà affiché du HTML à plusieurs occasions, mais ici, on part du princi
 
 Votre réflexe de développeur doit immédiatement vous souffler à l'oreille "*Faisons une boucle*" mais Elm ne possède pas de boucles ! 
 
-En revanche, il s'agit d'un langage fonctionnel, et il permet donc d'effectuer des opérations sur des listes pour les transformer !
+En revanche, il s'agit d'un langage fonctionnel, et il permet donc d'effectuer des opérations sur des listes pour les transformer.
 
-En y réfléchissant, c'est exactement ce qu'on veut faire ! Transformer notre liste de `Category` en listes de `li` correspondant à la catégorie ! 
+En y réfléchissant, c'est exactement ce qu'on veut faire : transformer notre liste de `Category` en listes de `li` correspondant à la catégorie.
 
 Une fois cette liste transformée, on peut directement l'utiliser comme second argument d'une fonction `ul` pour obtenir le rendu souhaité.
 

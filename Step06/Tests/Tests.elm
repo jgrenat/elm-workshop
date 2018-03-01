@@ -45,7 +45,7 @@ listOfCategoriesIsPresent =
 
 everyCategoriesAreDisplayed : Test
 everyCategoriesAreDisplayed =
-    test "There are 32 'li' tags displayed, one for each category" <|
+    test "There are 24 'li' tags displayed, one for each category" <|
         \() ->
             categoriesPage
                 |> Query.fromHtml

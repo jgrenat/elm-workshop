@@ -73,6 +73,8 @@ whenSecondRadioButtonIsClickedUserShouldBeAdult =
                 messageTriggered =
                     view initialModel
                         |> Query.fromHtml
+                        |> Query.findAll [ attribute (type_ "radio") ]
+                        |> Query.index 1
                         |> Event.simulate Event.click
                         |> Event.toResult
 

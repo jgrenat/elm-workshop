@@ -18,7 +18,9 @@ main =
         , twoLinksAreDisplayed
         , theTwoLinksHaveProperClasses
         , aLinkToGameIsPresent
+        , theGameLinkHasProperText
         , aLinkToCategoriesIsPresent
+        , theCategoriesLinkHasProperText
         ]
         |> run
 
@@ -65,13 +67,24 @@ theTwoLinksHaveProperClasses =
 
 aLinkToGameIsPresent : Test
 aLinkToGameIsPresent =
-    test "The first linkgoes to '#game'" <|
+    test "The first link goes to '#game'" <|
         \() ->
             homePage
                 |> Query.fromHtml
                 |> Query.findAll [ tag "a" ]
                 |> Query.first
                 |> Query.has [ attribute (href "#game") ]
+
+
+theGameLinkHasProperText : Test
+theGameLinkHasProperText =
+    test "The first link has text 'Play random questions'" <|
+        \() ->
+            homePage
+                |> Query.fromHtml
+                |> Query.findAll [ tag "a" ]
+                |> Query.first
+                |> Query.has [ text "Play random questions" ]
 
 
 aLinkToCategoriesIsPresent : Test
@@ -83,3 +96,14 @@ aLinkToCategoriesIsPresent =
                 |> Query.findAll [ tag "a" ]
                 |> Query.index 1
                 |> Query.has [ attribute (href "#categories") ]
+
+
+theCategoriesLinkHasProperText : Test
+theCategoriesLinkHasProperText =
+    test "The second link has text 'Play from a category'" <|
+        \() ->
+            homePage
+                |> Query.fromHtml
+                |> Query.findAll [ tag "a" ]
+                |> Query.index 1
+                |> Query.has [ text "Play from a category" ]
