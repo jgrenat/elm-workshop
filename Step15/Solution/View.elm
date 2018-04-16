@@ -1,10 +1,10 @@
-module Step15.View exposing (view, displayTestsAndView)
+module Step15.Solution.View exposing (view, displayTestsAndView)
 
 import Html exposing (Html, a, div, h1, h2, iframe, li, program, text, ul)
 import ElmEscapeHtml exposing (unescape)
 import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
-import Step15.Types exposing (..)
+import Step15.Solution.Types exposing (..)
 
 
 view : Model -> Html Msg
@@ -102,18 +102,11 @@ displayGame question =
 
 displayAnswer : String -> Html Msg
 displayAnswer answer =
-    li [] [ a [ class "btn btn-primary" ] [ unescape answer |> text ] ]
-
-
-
-------------------------------------------------------------------------------------------------------
--- Don't modify the code below, it displays the view and the tests and helps with testing your code --
-------------------------------------------------------------------------------------------------------
+    li [] [ a [ class "btn btn-primary", onClick (AnswerQuestion answer) ] [ unescape answer |> text ] ]
 
 
 displayTestsAndView : Model -> Html Msg
 displayTestsAndView model =
     div []
         [ div [ class "jumbotron" ] [ view model ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
         ]

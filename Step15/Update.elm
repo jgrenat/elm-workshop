@@ -1,8 +1,9 @@
 module Step15.Update exposing (update)
 
+import Navigation
 import Step15.Api exposing (getQuestionsCommand)
 import Step15.Routing exposing (parseLocation)
-import Step15.Types exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), Route(..))
+import Step15.Types exposing (AnsweredQuestion, Category, Game, Model, Msg(..), Question, QuestionStatus(Correct, Incorrect), RemoteData(..), Route(..))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

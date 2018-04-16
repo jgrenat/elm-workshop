@@ -1,4 +1,4 @@
-module Step10.CategoriesPage exposing (..)
+module Step10.Solution.CategoriesPage exposing (..)
 
 import Testable
 import Testable.Cmd
@@ -49,9 +49,13 @@ getCategoriesDecoder =
     Decode.field "trivia_categories" categoriesListDecoder
 
 
-categoriesListDecoder : Decode.Decoder (List Category)
 categoriesListDecoder =
-    Decode.succeed []
+    Decode.list
+        (Decode.map2
+            Category
+            (Decode.field "id" Decode.int)
+            (Decode.field "name" Decode.string)
+        )
 
 
 update : Msg -> Model -> ( Model, Testable.Cmd.Cmd Msg )
@@ -61,7 +65,7 @@ update msg model =
             ( Model OnError, Testable.Cmd.none )
 
         OnCategoriesFetched (Ok categories) ->
-            ( model, Testable.Cmd.none )
+            ( Model (Loaded categories), Testable.Cmd.none )
 
 
 view : Model -> Testable.Html.Html Msg
@@ -106,7 +110,6 @@ displayTestsAndView : Model -> Testable.Html.Html Msg
 displayTestsAndView model =
     div []
         [ div [ class "jumbotron" ] [ view model ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
         ]
 
 

@@ -1,4 +1,4 @@
-# Étape 12 : Le routing
+# Étape 11 : Le routing
 
 ## Objectif
 
@@ -64,7 +64,7 @@ matcher =
         ]
 ```
 
-Ici, on map les URL `/`, `/articles` et `/article/{articleID}`. Vous avez vous-même trois routes à mapper : la page d'accueil, la liste des catégories et la page des réponses, qui prend le score en paramètre.
+Ici, on map les URL `/`, `/articles` et `/article/{articleID}`. Vous avez vous-même trois routes à mapper : la page d'accueil, la liste des catégories et la page des résultats, qui prend le score en paramètre.
 
 Quand le module Navigation nous envoie une URL, ce sera en fait un objet `Location` qu'il faut donc transformer avec notre matcher :
 
@@ -84,11 +84,11 @@ parseLocation location =
             HomepageRoute 
 ```
 
-Remplacez ensuite le `Html.program` par un `Navigation.program` et n'oubliez pas d'adapter la fonction `initialModel`. Attention, `Location.program` prend deux arguments, le premier étant un message pour nous renvoyer la `Location` quand celle-ci change, et le second étant l'équivalent de l'argument de `Html.program`.
+Le `Html.program` a déjà été remplacé par un `Navigation.program` dans le code. Comme vous pouvez le voir, `Navigation.program` prend deux arguments, le premier étant un message pour nous renvoyer la `Location` quand celle-ci change, et le second étant l'équivalent de l'argument de `Html.program`. N'oubliez pas cependant d'adapter la fonction `initialModel`.
 
 Finalement, adaptez votre vue pour afficher la bonne page :)
 
-Comme on ne peut pas jouer encore, j'ai simulé un lien vers la page de résultat.
+Comme on ne peut pas encore jouer, j'ai simulé un lien vers la page de résultat.
 
 
 ## Let's start!

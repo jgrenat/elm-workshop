@@ -1,4 +1,4 @@
-module Step13.GamePage exposing (..)
+module Step13.Solution.GamePage exposing (..)
 
 import Testable
 import Testable.Cmd
@@ -38,7 +38,7 @@ type alias Game =
 
 
 type Msg
-    = None
+    = OnQuestionsFetched (Result Http.Error (List Question))
 
 
 type alias Category =
@@ -55,19 +55,34 @@ type RemoteData a
 
 init : ( Model, Testable.Cmd.Cmd Msg )
 init =
-    ( Model Loading, Testable.Cmd.none )
+    ( Model Loading, Http.send OnQuestionsFetched getQuestionsRequest )
 
 
 update : Msg -> Model -> ( Model, Testable.Cmd.Cmd Msg )
 update message model =
     case message of
-        None ->
-            ( model, Testable.Cmd.none )
+        OnQuestionsFetched (Ok (firstQuestion :: remainingQuestions)) ->
+            let
+                game =
+                    Game firstQuestion remainingQuestions
+            in
+                ( Model (Loaded game), Testable.Cmd.none )
+
+        OnQuestionsFetched _ ->
+            ( Model OnError, Testable.Cmd.none )
 
 
 view : Model -> Testable.Html.Html Msg
 view model =
-    div [] [ text "Content of the page" ]
+    case model.game of
+        Loading ->
+            div [] [ text "Loading the questions..." ]
+
+        OnError ->
+            div [] [ text "An unknown error occurred while loading the questions" ]
+
+        Loaded game ->
+            gamePage game.currentQuestion
 
 
 gamePage : Question -> Html msg
@@ -83,17 +98,54 @@ displayAnswer answer =
     li [] [ a [ class "btn btn-primary" ] [ text answer ] ]
 
 
+getQuestionsRequest : Http.Request (List Question)
+getQuestionsRequest =
+    Http.get questionsUrl questionsDecoder
 
-------------------------------------------------------------------------------------------------------
--- Don't modify the code below, it displays the view and the tests and helps with testing your code --
-------------------------------------------------------------------------------------------------------
+
+questionsDecoder : Decode.Decoder (List Question)
+questionsDecoder =
+    Decode.field "results" (Decode.list questionDecoder)
+
+
+questionDecoder : Decode.Decoder Question
+questionDecoder =
+    Decode.map3
+        Question
+        (Decode.field "question" Decode.string)
+        correctAnswerDecoder
+        answersDecoder
+
+
+correctAnswerDecoder : Decode.Decoder String
+correctAnswerDecoder =
+    Decode.field "correct_answer" Decode.string
+
+
+answersDecoder : Decode.Decoder (List String)
+answersDecoder =
+    Decode.map2
+        (\correctAnswer incorrectAnswers -> correctAnswer :: incorrectAnswers)
+        correctAnswerDecoder
+        (Decode.field "incorrect_answers" (Decode.list Decode.string))
+
+
+
+{- Or in a more concise way:
+
+   answersDecoder : Decode.Decoder (List String)
+   answersDecoder =
+       Decode.map2
+           (::)
+           correctAnswerDecoder
+           (Decode.field "incorrect_answers" (Decode.list Decode.string))
+-}
 
 
 displayTestsAndView : Model -> Testable.Html.Html Msg
 displayTestsAndView model =
     div []
         [ div [ class "jumbotron" ] [ view model ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
         ]
 
 

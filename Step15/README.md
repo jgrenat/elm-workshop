@@ -9,7 +9,7 @@ Nous allons maintenant autoriser l'utilisateur à répondre aux questions et à 
 
 ## Instructions
 
- - Quand un utilisateur clique sur une réponse, il passe à la question suivante et son résultat pour cette question est stocké dans le modèle
+ - Quand un utilisateur clique sur une réponse, il passe à la question suivante et son résultat pour cette question est stocké dans le modèle.
  Attention, pas de changement de page ici, on utilise le même procédé que dans le compteur à l'étape 1 !
  
  - Une fois une question répondue, l'utilisateur passe à la page suivante
@@ -21,7 +21,7 @@ Nous allons maintenant autoriser l'utilisateur à répondre aux questions et à 
 
 Comme vous pouvez le voir, on a ici plusieurs fichiers. Les méthodes ont en effet été extraites dans plusieurs fichiers différents correspondant à leur fonction. On a ainsi séparé les types, les méthodes d'affichage, la fonction d'update, ce qui concerne le routing et les appels d'API. 
 
-Cette séparation est suffisante pour un petit projet comme le nôtre. Sur des projets plus gros, on aurait une approche orientée composants, par exemple un composant par page.
+Cette séparation est suffisante pour un petit projet comme le nôtre. Sur des projets plus gros, on pourrait par exemple avoir une approche orientée composants avec un composant par page.
 
 ## Let's start!
 

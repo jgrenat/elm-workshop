@@ -53,25 +53,17 @@ type RemoteData a
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Loading, getQuestionsCmd )
+    ( Model Loading, Http.send OnQuestionsFetched getQuestionsRequest )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        OnQuestionsFetched (Ok []) ->
-            ( model, getQuestionsCmd )
-
         OnQuestionsFetched (Ok (currentQuestion :: remainingQuestions)) ->
             ( Model (Loaded (Game currentQuestion remainingQuestions)), Cmd.none )
 
-        OnQuestionsFetched (Err _) ->
+        OnQuestionsFetched _ ->
             ( Model OnError, Cmd.none )
-
-
-getQuestionsCmd : Cmd Msg
-getQuestionsCmd =
-    Http.send OnQuestionsFetched getQuestionsRequest
 
 
 getQuestionsRequest : Http.Request (List Question)
@@ -86,12 +78,24 @@ questionsDecoder =
 
 questionDecoder : Decode.Decoder Question
 questionDecoder =
-    Decode.map3 Question (Decode.field "question" Decode.string) (Decode.field "correct_answer" Decode.string) answersDecoder
+    Decode.map3
+        Question
+        (Decode.field "question" Decode.string)
+        correctAnswerDecoder
+        answersDecoder
+
+
+correctAnswerDecoder : Decode.Decoder String
+correctAnswerDecoder =
+    Decode.field "correct_answer" Decode.string
 
 
 answersDecoder : Decode.Decoder (List String)
 answersDecoder =
-    Decode.map2 (::) (Decode.field "correct_answer" Decode.string) (Decode.field "incorrect_answers" (Decode.list Decode.string))
+    Decode.map2
+        (::)
+        correctAnswerDecoder
+        (Decode.field "incorrect_answers" (Decode.list Decode.string))
 
 
 view : Model -> Html Msg

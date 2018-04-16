@@ -1,10 +1,11 @@
-module Step11.Routing exposing (..)
+module Step11.Solution.Routing exposing (..)
 
 import Html exposing (Html, a, button, div, h1, iframe, li, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Http
 import Result exposing (Result)
 import Json.Decode as Decode
+import UrlParser exposing (..)
 import Navigation exposing (Location)
 
 
@@ -14,6 +15,31 @@ main =
         { init = init, update = update, view = displayTestsAndView, subscriptions = (\model -> Sub.none) }
 
 
+type Route
+    = HomepageRoute
+    | CategoriesRoute
+    | ResultRoute Int
+
+
+matcher : Parser (Route -> a) a
+matcher =
+    oneOf
+        [ map HomepageRoute top
+        , map CategoriesRoute (s "categories")
+        , map ResultRoute (s "result" </> int)
+        ]
+
+
+parseLocation : Location -> Route
+parseLocation location =
+    case (parseHash matcher location) of
+        Just route ->
+            route
+
+        Nothing ->
+            HomepageRoute
+
+
 type Msg
     = OnCategoriesFetched (Result Http.Error (List Category))
     | OnLocationChange Location
@@ -21,6 +47,7 @@ type Msg
 
 type alias Model =
     { categories : RemoteData (List Category)
+    , route : Route
     }
 
 
@@ -36,7 +63,11 @@ type RemoteData a
 
 initialModel : Location -> Model
 initialModel location =
-    Model Loading
+    let
+        route =
+            parseLocation location
+    in
+        Model Loading route
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -54,7 +85,7 @@ update msg model =
             ( { model | categories = OnError }, Cmd.none )
 
         OnLocationChange location ->
-            ( model, Cmd.none )
+            ( { model | route = parseLocation location }, Cmd.none )
 
 
 getCategoriesUrl : String
@@ -82,7 +113,15 @@ view model =
 
 displayPage : Model -> Html Msg
 displayPage model =
-    displayHomepage model
+    case model.route of
+        HomepageRoute ->
+            displayHomepage model
+
+        CategoriesRoute ->
+            displayCategoriesPage model.categories
+
+        ResultRoute score ->
+            displayResultPage score
 
 
 displayHomepage : Model -> Html Msg
@@ -135,15 +174,8 @@ displayCategory category =
             ]
 
 
-
-------------------------------------------------------------------------------------------------------
--- Don't modify the code below, it displays the view and the tests and helps with testing your code --
-------------------------------------------------------------------------------------------------------
-
-
 displayTestsAndView : Model -> Html Msg
 displayTestsAndView model =
     div []
         [ div [ class "jumbotron" ] [ view model ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
         ]

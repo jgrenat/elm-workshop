@@ -8,7 +8,7 @@ C'est bien beau d'avoir le résultat sous forme de `String`, mais ce serait quan
 ## Les Decoders JSON
 
 Elm se targue d'éviter toute erreur au *runtime*, et cela provient en grande partie de son système de types. Alors comment concilier cela avec des formats de données comme le JSON, qui sont par essence très permissifs ?
-Cela passe par une étape de validation de la structure de ce JSON, via ce qu'on appelle des `Decoder`s.
+Cela passe par une étape de validation de la structure de ce JSON, via ce qu'on appelle des `Decoder`.
 
 Décoder un JSON en type Elm, c'est décrire la totalité ou une partie de la structure d'un JSON.
 
@@ -53,11 +53,12 @@ Comme vous pouvez le voir, cette fonction retourne un `Result`, ce qui vous obli
 
 ## Quelques astuces
 
-Vous avez maintenant tout ce qu'il vous faut pour décoder notre `String` en une `List Category`, mais voici deux petites pistes :
+Vous avez maintenant tout ce qu'il vous faut pour décoder notre `String` en une `List Category`, mais voici quelques petites pistes :
 
  - En remplaçant [`Http.getString`](http://package.elm-lang.org/packages/evancz/elm-http/3.0.1/Http#getString) par [`Http.get`](http://package.elm-lang.org/packages/evancz/elm-http/3.0.1/Http#get), vous pouvez directement fournir en second argument un `Decoder` pour tenter de décoder le contenu reçu  
  - Ici, vous ne décodez pas une seule catégorie, mais une liste de catégories. Je vous laisse explorer le module [`Json.Decode`](http://package.elm-lang.org/packages/elm-lang/core/5.1.1/Json-Decode) à la recherche d'une fonction pour vous aider !
  - Attention, si vous regardez bien le JSON retourné par l'API, il est de la forme `{ "trivia_categories": [...] }`. Il vous faudra donc wrapper votre décodeur en conséquence :
+
 ```elm 
 getCategoriesDecoder = 
         Decode.field "trivia_categories" categoriesListDecoder
