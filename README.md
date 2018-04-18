@@ -28,6 +28,14 @@ If you don't want to set up a dev environment, you can use the Ellie online edit
 
 Follow the instructions on the [elm-format page](https://github.com/avh4/elm-format#installation-) and don't forget to configure your IDE to work with `elm-format`.
 
+## Get the code
+
+You now need to get the code from this repository, either by [downloading the archive (click here)](https://github.com/jgrenat/elm-workshop/archive/master.zip) or by cloning it:
+
+```
+git clone https://github.com/jgrenat/elm-workshop.git
+cd elm-workshop
+```
 
 # Workshop
 
