@@ -10,7 +10,7 @@ Voici la structure que vous devez réaliser en HTML :
 
 ```html
 <div class="score">
-    <p>Your score: 3 / 5</p>
+    <h1>Your score: 3 / 5</h1>
     <p>Keep going, I'm sure you can do better!</p>
     <a class="btn btn-primary" href="#">Replay</a>
 </div>
@@ -24,7 +24,7 @@ Pour cela, ouvrez le fichier `./ResultPage.elm` et ajoutez ce qu'il manque ! On 
 
 ## Un bloc `let...in` pour déclarer des variables
 
-En ouvrant le fichier, vous allez voir une nouveauté, un bloc `let...in. Celui-ci vous permet de déclarer des variables dans le bloc `let` pour les utiliser ensuite dans le bloc `in`:
+En ouvrant le fichier, vous allez voir une nouveauté, un bloc `let...in`. Celui-ci vous permet de déclarer des variables dans le bloc `let` pour les utiliser ensuite dans le bloc `in`:
 
 ```elm
 import Html exposing (text)
