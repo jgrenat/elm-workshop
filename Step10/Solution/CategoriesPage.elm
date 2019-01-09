@@ -1,17 +1,17 @@
-module Step10.Solution.CategoriesPage exposing (..)
+module Step10.Solution.CategoriesPage exposing (Category, Model, Msg(..), RemoteData(..), categoriesListDecoder, displayCategories, displayCategory, displayTestsAndView, getCategoriesDecoder, getCategoriesRequest, init, main, testableProgram, update, view)
 
+import Json.Decode as Decode
+import Result exposing (Result)
 import Testable
 import Testable.Cmd
 import Testable.Html exposing (Html, a, button, div, h1, iframe, li, program, text, ul)
 import Testable.Html.Attributes exposing (class, href, src, style)
 import Testable.Http as Http
-import Result exposing (Result)
-import Json.Decode as Decode
 
 
 main : Program Never Model Msg
 main =
-    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = (\model -> Sub.none) }
+    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
 
 
 type alias Model =
@@ -93,11 +93,11 @@ displayCategory : Category -> Testable.Html.Html msg
 displayCategory category =
     let
         link =
-            "#game/category/" ++ (toString category.id)
+            "#game/category/" ++ toString category.id
     in
-        li []
-            [ a [ class "btn btn-primary", href link ] [ text category.name ]
-            ]
+    li []
+        [ a [ class "btn btn-primary", href link ] [ text category.name ]
+        ]
 
 
 

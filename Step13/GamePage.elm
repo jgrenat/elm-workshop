@@ -1,12 +1,12 @@
-module Step13.GamePage exposing (..)
+module Step13.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), displayAnswer, displayTestsAndView, gamePage, init, main, questionsUrl, testableProgram, update, view)
 
+import Json.Decode as Decode
+import Result exposing (Result)
 import Testable
 import Testable.Cmd
 import Testable.Html exposing (Html, a, div, h2, iframe, li, program, text, ul)
 import Testable.Html.Attributes exposing (class, src, style)
 import Testable.Http as Http
-import Result exposing (Result)
-import Json.Decode as Decode
 
 
 questionsUrl : String
@@ -16,7 +16,7 @@ questionsUrl =
 
 main : Program Never Model Msg
 main =
-    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = (\model -> Sub.none) }
+    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
 
 
 type alias Question =

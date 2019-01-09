@@ -1,11 +1,12 @@
-module Counter exposing (..)
+module Counter exposing (Msg(..), main, update, view)
 
-import Html exposing (Html, button, span, text, div)
+import Browser
+import Html exposing (Html, button, div, span, text)
 import Html.Events exposing (onClick)
 
 
 main =
-    Html.beginnerProgram { model = 0, view = view, update = update }
+    Browser.sandbox { init = 0, view = view, update = update }
 
 
 type Msg
@@ -25,6 +26,6 @@ update msg model =
 view model =
     div []
         [ button [ onClick Decrement ] [ text "-" ]
-        , span [] [ text (toString model) ]
+        , span [] [ text (String.fromInt model) ]
         , button [ onClick Increment ] [ text "+" ]
         ]

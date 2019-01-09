@@ -1,18 +1,18 @@
-module Step10.Tests.Tests exposing (..)
+module Step10.Tests.Tests exposing (categoriesListEncoder, categoriesPageComponent, categoriesUrl, expectedRequest, randomCategoriesFuzz, suite, theInitMethodRequestShouldBeAGETRequestToProperUrl, theInitMethodShouldFetchCategories, theInitModelShouldBeLoading, whenInitRequestCompletesTheModelShouldBeUpdated, whenInitRequestCompletesTheResultsShouldBeDisplayed, whenInitRequestFailTheCategoriesShouldBeOnError, whenInitRequestFailThereShouldBeAnError, whenTheCategoriesAreLoadingAMessageShouldSaySo)
 
-import Fuzz
-import Http exposing (Error(NetworkError))
-import Step10.CategoriesPage as CategoriesPage exposing (Category, Model, Msg(..), RemoteData(..))
-import Test.Runner.Html exposing (run)
-import Test exposing (Test, describe, fuzz, test)
 import Expect exposing (Expectation)
+import Fuzz
 import Html.Attributes exposing (href)
-import Testable.Cmd
-import Testable
-import Testable.TestContext exposing (..)
-import Testable.Http
+import Http exposing (Error(..))
 import Json.Encode as Encode
+import Step10.CategoriesPage as CategoriesPage exposing (Category, Model, Msg(..), RemoteData(..))
+import Test exposing (Test, describe, fuzz, test)
+import Test.Runner.Html exposing (run)
+import Testable
+import Testable.Cmd
 import Testable.Html.Selectors exposing (tag)
+import Testable.Http
+import Testable.TestContext exposing (..)
 
 
 categoriesUrl : String
@@ -29,7 +29,8 @@ categoriesPageComponent =
     Component CategoriesPage.init CategoriesPage.update CategoriesPage.view
 
 
-main =
+suite : Test
+suite =
     describe "What we expect:"
         [ theInitMethodShouldFetchCategories
         , theInitModelShouldBeLoading
@@ -68,7 +69,7 @@ theInitMethodRequestShouldBeAGETRequestToProperUrl =
 
 whenTheCategoriesAreLoadingAMessageShouldSaySo : Test
 whenTheCategoriesAreLoadingAMessageShouldSaySo =
-    test ("When the request is loading, the following message should be displayed: \"Loading the categories...\"") <|
+    test "When the request is loading, the following message should be displayed: \"Loading the categories...\"" <|
         \() ->
             categoriesPageComponent
                 |> startForTest
@@ -77,18 +78,18 @@ whenTheCategoriesAreLoadingAMessageShouldSaySo =
 
 whenInitRequestFailTheCategoriesShouldBeOnError : Test
 whenInitRequestFailTheCategoriesShouldBeOnError =
-    test ("When the request fails, the model should keep track of that and there should be no command sent") <|
+    test "When the request fails, the model should keep track of that and there should be no command sent" <|
         \() ->
             let
                 model =
                     CategoriesPage.update (OnCategoriesFetched (Err NetworkError)) (Model Loading)
             in
-                Expect.equal ( Model OnError, Testable.Cmd.none ) model
+            Expect.equal ( Model OnError, Testable.Cmd.none ) model
 
 
 whenInitRequestFailThereShouldBeAnError : Test
 whenInitRequestFailThereShouldBeAnError =
-    test ("When the request fails, the following error message should be displayed: \"An error occurred while loading the categories\"") <|
+    test "When the request fails, the following error message should be displayed: \"An error occurred while loading the categories\"" <|
         \() ->
             categoriesPageComponent
                 |> startForTest
@@ -98,7 +99,7 @@ whenInitRequestFailThereShouldBeAnError =
 
 whenInitRequestCompletesTheModelShouldBeUpdated : Test
 whenInitRequestCompletesTheModelShouldBeUpdated =
-    fuzz randomCategoriesFuzz ("When the request completes, the model should store the decoded categories") <|
+    fuzz randomCategoriesFuzz "When the request completes, the model should store the decoded categories" <|
         \randomCategories ->
             let
                 categoriesJson =
@@ -107,15 +108,15 @@ whenInitRequestCompletesTheModelShouldBeUpdated =
                 expectedModel =
                     Model (Loaded randomCategories)
             in
-                categoriesPageComponent
-                    |> startForTest
-                    |> resolveHttpRequest expectedRequest (Testable.Http.ok categoriesJson)
-                    |> assertCurrentModel expectedModel
+            categoriesPageComponent
+                |> startForTest
+                |> resolveHttpRequest expectedRequest (Testable.Http.ok categoriesJson)
+                |> assertCurrentModel expectedModel
 
 
 whenInitRequestCompletesTheResultsShouldBeDisplayed : Test
 whenInitRequestCompletesTheResultsShouldBeDisplayed =
-    fuzz randomCategoriesFuzz ("When the request completes, the categories should be displayed") <|
+    fuzz randomCategoriesFuzz "When the request completes, the categories should be displayed" <|
         \randomCategories ->
             let
                 categoriesJson =
@@ -132,16 +133,16 @@ whenInitRequestCompletesTheResultsShouldBeDisplayed =
                         |> (::) (\content -> Expect.pass)
                         |> Expect.all
             in
-                case randomCategories of
-                    -- Not asserting empty array because findAll makes it fail
-                    [] ->
-                        Expect.pass
+            case randomCategories of
+                -- Not asserting empty array because findAll makes it fail
+                [] ->
+                    Expect.pass
 
-                    _ ->
-                        categoriesPageComponent
-                            |> startForTest
-                            |> resolveHttpRequest expectedRequest (Testable.Http.ok categoriesJson)
-                            |> assertText (allCategoriesNamesArePresent randomCategories)
+                _ ->
+                    categoriesPageComponent
+                        |> startForTest
+                        |> resolveHttpRequest expectedRequest (Testable.Http.ok categoriesJson)
+                        |> assertText (allCategoriesNamesArePresent randomCategories)
 
 
 randomCategoriesFuzz : Fuzz.Fuzzer (List Category)
@@ -161,4 +162,4 @@ categoriesListEncoder categories =
                     ]
             )
         |> Encode.list
-        |> \categories -> Encode.object [ ( "trivia_categories", categories ) ]
+        |> (\categories -> Encode.object [ ( "trivia_categories", categories ) ])

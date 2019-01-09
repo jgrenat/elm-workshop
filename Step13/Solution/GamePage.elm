@@ -1,12 +1,12 @@
-module Step13.Solution.GamePage exposing (..)
+module Step13.Solution.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), answersDecoder, correctAnswerDecoder, displayAnswer, displayTestsAndView, gamePage, getQuestionsRequest, init, main, questionDecoder, questionsDecoder, questionsUrl, testableProgram, update, view)
 
+import Json.Decode as Decode
+import Result exposing (Result)
 import Testable
 import Testable.Cmd
 import Testable.Html exposing (Html, a, div, h2, iframe, li, program, text, ul)
 import Testable.Html.Attributes exposing (class, src, style)
 import Testable.Http as Http
-import Result exposing (Result)
-import Json.Decode as Decode
 
 
 questionsUrl : String
@@ -16,7 +16,7 @@ questionsUrl =
 
 main : Program Never Model Msg
 main =
-    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = (\model -> Sub.none) }
+    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
 
 
 type alias Question =
@@ -66,7 +66,7 @@ update message model =
                 game =
                     Game firstQuestion remainingQuestions
             in
-                ( Model (Loaded game), Testable.Cmd.none )
+            ( Model (Loaded game), Testable.Cmd.none )
 
         OnQuestionsFetched _ ->
             ( Model OnError, Testable.Cmd.none )

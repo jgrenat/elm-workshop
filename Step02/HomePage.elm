@@ -1,6 +1,6 @@
-module Step02.HomePage exposing (..)
+module Step02.HomePage exposing (homePage, main)
 
-import Html exposing (Html, a, beginnerProgram, div, h1, iframe, text)
+import Html exposing (Html, a, div, h1, iframe, text)
 import Html.Attributes exposing (class, href, src, style)
 
 
@@ -21,5 +21,5 @@ homePage =
 main =
     div []
         [ div [ class "jumbotron" ] [ homePage ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
+        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
         ]

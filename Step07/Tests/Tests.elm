@@ -1,23 +1,22 @@
-module Step07.Tests.Tests exposing (..)
+module Step07.Tests.Tests exposing (atFirstThereShouldBeNoMessage, suite, whenFirstRadioButtonIsClickedUserShouldBeUnderage, whenSecondRadioButtonIsClickedUserShouldBeAdult)
 
+import Expect
 import Html exposing (div)
-import Step07.UserStatus exposing (view, update, initialModel)
-import Test.Runner.Html exposing (run)
+import Html.Attributes exposing (href, type_)
+import Step07.UserStatus exposing (initialModel, update, view)
 import Test exposing (Test, describe, test)
+import Test.Html.Event as Event
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, tag, text)
-import Test.Html.Event as Event
-import Expect
-import Html.Attributes exposing (href, type_)
 
 
-main =
+suite : Test
+suite =
     describe "What we expect:"
         [ atFirstThereShouldBeNoMessage
         , whenFirstRadioButtonIsClickedUserShouldBeUnderage
         , whenSecondRadioButtonIsClickedUserShouldBeAdult
         ]
-        |> run
 
 
 atFirstThereShouldBeNoMessage : Test
@@ -53,16 +52,16 @@ whenFirstRadioButtonIsClickedUserShouldBeUnderage =
                         |> Result.map (\model -> view model)
                         |> Result.map Query.fromHtml
             in
-                Expect.all
-                    [ \result ->
-                        result
-                            |> Result.map (Query.has [ text "You are underage" ])
-                            |> Result.withDefault (Expect.fail "\"You are underage\" should be present")
-                    , \result ->
-                        Result.map (Query.hasNot [ text "You are an adult" ]) result
-                            |> Result.withDefault (Expect.fail "\"You are an adult\" should not be present")
-                    ]
-                    updatedView
+            Expect.all
+                [ \result ->
+                    result
+                        |> Result.map (Query.has [ text "You are underage" ])
+                        |> Result.withDefault (Expect.fail "\"You are underage\" should be present")
+                , \result ->
+                    Result.map (Query.hasNot [ text "You are an adult" ]) result
+                        |> Result.withDefault (Expect.fail "\"You are an adult\" should not be present")
+                ]
+                updatedView
 
 
 whenSecondRadioButtonIsClickedUserShouldBeAdult : Test
@@ -87,12 +86,12 @@ whenSecondRadioButtonIsClickedUserShouldBeAdult =
                         |> Result.map (\model -> view model)
                         |> Result.map Query.fromHtml
             in
-                Expect.all
-                    [ \result ->
-                        Result.map (Query.hasNot [ text "You are underage" ]) result
-                            |> Result.withDefault (Expect.fail "\"You are underage\" should not be present")
-                    , \result ->
-                        Result.map (Query.has [ text "You are an adult" ]) result
-                            |> Result.withDefault (Expect.fail "\"You are an adult\" should be present")
-                    ]
-                    updatedView
+            Expect.all
+                [ \result ->
+                    Result.map (Query.hasNot [ text "You are underage" ]) result
+                        |> Result.withDefault (Expect.fail "\"You are underage\" should not be present")
+                , \result ->
+                    Result.map (Query.has [ text "You are an adult" ]) result
+                        |> Result.withDefault (Expect.fail "\"You are an adult\" should be present")
+                ]
+                updatedView

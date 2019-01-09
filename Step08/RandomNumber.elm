@@ -1,19 +1,20 @@
-module Main exposing (..)
+module Main exposing (Model, Msg(..), init, main, update, view)
 
-import Random
-import Html exposing (Html, program, div, button, text)
+import Browser
+import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
+import Random
 
 
 {-| (1)
 -}
 main : Program Never Model Msg
 main =
-    program
-        { init = init
+    Browser.document
+        { init = \() -> init
         , update = update
         , view = view
-        , subscriptions = (\model -> Sub.none) -- (2)
+        , subscriptions = \model -> Sub.none -- (2)
         }
 
 
@@ -54,5 +55,5 @@ view model =
         -- (4)
         [ button [ onClick GenerateNumber ] [ text "Generate random number" ]
         , div []
-            [ text ("The random number : " ++ (toString model.randomNumber)) ]
+            [ text ("The random number : " ++ toString model.randomNumber) ]
         ]

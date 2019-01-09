@@ -1,7 +1,7 @@
 module Step15.Solution.Routing exposing (parseLocation)
 
 import Navigation exposing (Location)
-import Step15.Solution.Types exposing (RemoteData(Loading), Route(..))
+import Step15.Solution.Types exposing (RemoteData(..), Route(..))
 import UrlParser exposing (..)
 
 

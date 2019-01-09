@@ -1,17 +1,17 @@
-module Step12.Tests.Tests exposing (..)
+module Step12.Tests.Tests exposing (testsSuite)
 
+import Expect exposing (Expectation)
 import Fuzz exposing (intRange, string)
 import Html exposing (div)
+import Html.Attributes exposing (href)
 import Step12.GamePage exposing (Question, gamePage)
-import Test.Runner.Html exposing (run)
 import Test exposing (Test, describe, fuzz, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (Selector, attribute, class, classes, tag, text)
-import Expect exposing (Expectation)
-import Html.Attributes exposing (href)
 
 
-main =
+testsSuite : Test
+testsSuite =
     describe "What we expect:"
         [ questionIsDisplayedIntoAH2Tag
         , theH2TagHasClassQuestion
@@ -19,7 +19,6 @@ main =
         , answersAreDisplayedInsideLiTags
         , answersHaveProperClasses
         ]
-        |> run
 
 
 questionIsDisplayedIntoAH2Tag : Test
@@ -61,9 +60,9 @@ answersAreDisplayed =
                 expectations =
                     List.map (text >> List.singleton >> Query.has) question.answers
             in
-                gamePage question
-                    |> Query.fromHtml
-                    |> Expect.all expectations
+            gamePage question
+                |> Query.fromHtml
+                |> Expect.all expectations
 
 
 answersAreDisplayedInsideLiTags : Test
@@ -85,10 +84,10 @@ answersHaveProperClasses =
                 expectations =
                     List.map (text >> List.singleton >> Query.has) question.answers
             in
-                gamePage question
-                    |> Query.fromHtml
-                    |> Query.findAll [ tag "li" ]
-                    |> Query.each (Query.has [ tag "a", classes [ "btn", "btn-primary" ] ])
+            gamePage question
+                |> Query.fromHtml
+                |> Query.findAll [ tag "li" ]
+                |> Query.each (Query.has [ tag "a", classes [ "btn", "btn-primary" ] ])
 
 
 questionFuzzer =

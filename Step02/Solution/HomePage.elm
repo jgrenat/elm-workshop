@@ -1,6 +1,6 @@
-module Step02.Solution.HomePage exposing (..)
+module Step02.Solution.HomePage exposing (homePage)
 
-import Html exposing (Html, a, beginnerProgram, div, h1, iframe, text)
+import Html exposing (Html, a, div, h1, iframe, text)
 import Html.Attributes exposing (class, href, src, style)
 
 

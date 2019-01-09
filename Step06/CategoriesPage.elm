@@ -1,4 +1,4 @@
-module Step06.CategoriesPage exposing (..)
+module Step06.CategoriesPage exposing (Category, categories, categoriesPage, main)
 
 import Html exposing (Html, a, div, h1, iframe, li, text, ul)
 import Html.Attributes exposing (class, href, src, style)
@@ -54,5 +54,5 @@ categories =
 main =
     div []
         [ div [ class "jumbotron" ] [ categoriesPage ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
+        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
         ]

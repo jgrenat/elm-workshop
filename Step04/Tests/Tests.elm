@@ -1,21 +1,20 @@
-module Step04.Tests.Tests exposing (..)
+module Step04.Tests.Tests exposing (aParagraphShouldNowAppear, congratsMessageWhenGoodScore, suite, supportMessageWhenBadScore)
 
 import Fuzz exposing (intRange)
 import Html exposing (div)
 import Step04.ResultPage exposing (resultPage)
-import Test.Runner.Html exposing (run)
 import Test exposing (Test, describe, fuzz, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (tag, text)
 
 
-main =
+suite : Test
+suite =
     describe "What we expect:"
         [ aParagraphShouldNowAppear
         , congratsMessageWhenGoodScore
         , supportMessageWhenBadScore
         ]
-        |> run
 
 
 aParagraphShouldNowAppear : Test

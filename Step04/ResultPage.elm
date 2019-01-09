@@ -1,13 +1,13 @@
-module Step04.ResultPage exposing (..)
+module Step04.ResultPage exposing (main, resultPage)
 
-import Html exposing (Html, a, beginnerProgram, div, h1, iframe, p, text)
+import Html exposing (Html, a, div, h1, iframe, p, text)
 import Html.Attributes exposing (class, href, id, src, style)
 
 
 resultPage : Int -> Html msg
 resultPage score =
     div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ (toString score) ++ " / 5") ]
+        [ h1 [] [ text ("Your score: " ++ String.fromInt score ++ " / 5") ]
         , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
         ]
 
@@ -21,5 +21,5 @@ resultPage score =
 main =
     div []
         [ div [ class "jumbotron" ] [ resultPage 3 ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
+        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
         ]

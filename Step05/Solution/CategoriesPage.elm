@@ -1,4 +1,4 @@
-module Step05.Solution.CategoriesPage exposing (..)
+module Step05.Solution.CategoriesPage exposing (Category, categories, main)
 
 import Html exposing (Html, text)
 

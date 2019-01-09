@@ -1,4 +1,4 @@
-module Step05.CategoriesPage exposing (..)
+module Step05.CategoriesPage exposing (categories, main)
 
 import Html exposing (Html, text)
 

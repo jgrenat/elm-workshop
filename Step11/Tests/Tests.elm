@@ -1,16 +1,15 @@
-module Step11.Tests.Tests exposing (..)
+module Step11.Tests.Tests exposing (testsSuite)
 
+import Expect exposing (Expectation)
 import Fuzz exposing (intRange)
-import Http exposing (Error(NetworkError))
+import Html.Attributes exposing (href, type_)
+import Http exposing (Error(..))
+import Json.Encode as Encode
 import Step11.Routing exposing (Category, Model, Msg(..), RemoteData(..), categoriesDecoder, init, update, view)
+import Test exposing (Test, describe, fuzz, test)
+import Test.Html.Event exposing (click, simulate, toResult)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, text)
-import Test.Html.Event exposing (simulate, toResult, click)
-import Test.Runner.Html exposing (run)
-import Test exposing (Test, describe, fuzz, test)
-import Expect exposing (Expectation)
-import Html.Attributes exposing (href, type_)
-import Json.Encode as Encode
 import Testable.Html.Selectors exposing (tag)
 
 
@@ -38,7 +37,8 @@ expectedRequest =
     Http.get categoriesUrl categoriesDecoder
 
 
-main =
+testsSuite : Test
+testsSuite =
     describe "What we expect:"
         [ atLoadingCategoriesShouldBeFetched
         , atLoadingHomepageShouldBeDisplayed
@@ -46,36 +46,35 @@ main =
         , whenGoingToResultLinkResultShouldBeDisplayed
         , whenGoingToResultLinkResultShouldBeDisplayedWithProperScore
         ]
-        |> run
 
 
 atLoadingCategoriesShouldBeFetched : Test
 atLoadingCategoriesShouldBeFetched =
-    test "When loading the page, the categories should be fetched" <|
+    testsSuite "When loading the page, the categories should be fetched" <|
         \() ->
             Expect.notEqual Cmd.none (init fakeLocation |> Tuple.second)
 
 
 atLoadingHomepageShouldBeDisplayed : Test
 atLoadingHomepageShouldBeDisplayed =
-    test "When loading the page, the homepage should appear" <|
+    testsSuite "When loading the page, the homepage should appear" <|
         \() ->
             let
                 initialModel =
                     init fakeLocation |> Tuple.first
             in
-                view initialModel
-                    |> Query.fromHtml
-                    |> Expect.all
-                        [ Query.has [ text "Quiz Game" ]
-                        , Query.has [ text "Play from a category" ]
-                        , Query.has [ text "Show me the results page" ]
-                        ]
+            view initialModel
+                |> Query.fromHtml
+                |> Expect.all
+                    [ Query.has [ text "Quiz Game" ]
+                    , Query.has [ text "Play from a category" ]
+                    , Query.has [ text "Show me the results page" ]
+                    ]
 
 
 whenGoingToCategoriesLinkCategoriesShouldBeDisplayed : Test
 whenGoingToCategoriesLinkCategoriesShouldBeDisplayed =
-    test "When we go on the categories link (/#categories), the categories page should be displayed" <|
+    testsSuite "When we go on the categories link (/#categories), the categories page should be displayed" <|
         \() ->
             let
                 initialModel =
@@ -90,17 +89,17 @@ whenGoingToCategoriesLinkCategoriesShouldBeDisplayed =
                         |> Tuple.first
                         |> view
             in
-                updatedView
-                    |> Query.fromHtml
-                    |> Expect.all
-                        [ Query.has [ text "Categories are loading" ]
-                        , Query.hasNot [ text "Play from a category" ]
-                        ]
+            updatedView
+                |> Query.fromHtml
+                |> Expect.all
+                    [ Query.has [ text "Categories are loading" ]
+                    , Query.hasNot [ text "Play from a category" ]
+                    ]
 
 
 whenGoingToResultLinkResultShouldBeDisplayed : Test
 whenGoingToResultLinkResultShouldBeDisplayed =
-    test "When we click on the second link, the result page should be displayed" <|
+    testsSuite "When we click on the second link, the result page should be displayed" <|
         \() ->
             let
                 initialModel =
@@ -115,12 +114,12 @@ whenGoingToResultLinkResultShouldBeDisplayed =
                         |> Tuple.first
                         |> view
             in
-                updatedView
-                    |> Query.fromHtml
-                    |> Expect.all
-                        [ Query.has [ text "Your score" ]
-                        , Query.hasNot [ text "Play from a category" ]
-                        ]
+            updatedView
+                |> Query.fromHtml
+                |> Expect.all
+                    [ Query.has [ text "Your score" ]
+                    , Query.hasNot [ text "Play from a category" ]
+                    ]
 
 
 whenGoingToResultLinkResultShouldBeDisplayedWithProperScore : Test
@@ -133,13 +132,13 @@ whenGoingToResultLinkResultShouldBeDisplayedWithProperScore =
                         |> Tuple.first
 
                 newLocation =
-                    { fakeLocation | hash = "#result/" ++ (toString score) }
+                    { fakeLocation | hash = "#result/" ++ toString score }
 
                 updatedView =
                     update (OnLocationChange newLocation) initialModel
                         |> Tuple.first
                         |> view
             in
-                updatedView
-                    |> Query.fromHtml
-                    |> Query.has [ (toString score) ++ " / 5" |> text ]
+            updatedView
+                |> Query.fromHtml
+                |> Query.has [ toString score ++ " / 5" |> text ]

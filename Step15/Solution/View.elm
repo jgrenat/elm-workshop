@@ -1,7 +1,7 @@
-module Step15.Solution.View exposing (view, displayTestsAndView)
+module Step15.Solution.View exposing (displayTestsAndView, view)
 
-import Html exposing (Html, a, div, h1, h2, iframe, li, program, text, ul)
 import ElmEscapeHtml exposing (unescape)
+import Html exposing (Html, a, div, h1, h2, iframe, li, program, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
 import Step15.Solution.Types exposing (..)
@@ -49,7 +49,7 @@ displayCategoriesPage categories =
 displayResultPage : Int -> Html Msg
 displayResultPage score =
     div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ (toString score) ++ " / 5") ]
+        [ h1 [] [ text ("Your score: " ++ toString score ++ " / 5") ]
         , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
         ]
 
@@ -85,11 +85,11 @@ displayCategory : Category -> Html Msg
 displayCategory category =
     let
         path =
-            "#game/category/" ++ (toString category.id)
+            "#game/category/" ++ toString category.id
     in
-        li []
-            [ a [ class "btn btn-primary", href path ] [ text category.name ]
-            ]
+    li []
+        [ a [ class "btn btn-primary", href path ] [ text category.name ]
+        ]
 
 
 displayGame : Question -> Html Msg

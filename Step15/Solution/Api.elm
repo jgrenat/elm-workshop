@@ -1,8 +1,8 @@
 module Step15.Solution.Api exposing (getCategoriesCommand, getQuestionsCommand)
 
-import Json.Decode as Decode
 import Http
-import Step15.Solution.Types exposing (Category, Question, Msg(..))
+import Json.Decode as Decode
+import Step15.Solution.Types exposing (Category, Msg(..), Question)
 
 
 getCategoriesUrl : String

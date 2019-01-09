@@ -3,7 +3,7 @@ module Step15.Update exposing (update)
 import Navigation
 import Step15.Api exposing (getQuestionsCommand)
 import Step15.Routing exposing (parseLocation)
-import Step15.Types exposing (AnsweredQuestion, Category, Game, Model, Msg(..), Question, QuestionStatus(Correct, Incorrect), RemoteData(..), Route(..))
+import Step15.Types exposing (AnsweredQuestion, Category, Game, Model, Msg(..), Question, QuestionStatus(..), RemoteData(..), Route(..))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,7 +23,7 @@ update msg model =
                 game =
                     Game [] currentQuestion remainingQuestions
             in
-                ( { model | route = GameRoute (Loaded game) }, Cmd.none )
+            ( { model | route = GameRoute (Loaded game) }, Cmd.none )
 
         OnQuestionsFetched (Err _) ->
             ( { model | route = GameRoute OnError }, Cmd.none )
@@ -41,4 +41,4 @@ update msg model =
                         _ ->
                             Cmd.none
             in
-                ( { model | route = route }, command )
+            ( { model | route = route }, command )

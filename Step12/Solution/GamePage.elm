@@ -1,4 +1,4 @@
-module Step12.Solution.GamePage exposing (..)
+module Step12.Solution.GamePage exposing (Question, displayAnswer, gamePage, main, questionToDisplay)
 
 import Html exposing (Html, a, div, h2, iframe, li, text, ul)
 import Html.Attributes exposing (class, href, src, style)

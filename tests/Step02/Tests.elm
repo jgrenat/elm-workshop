@@ -1,4 +1,4 @@
-module Step02.Tests.Tests exposing (aLinkToCategoriesIsPresent, aLinkToGameIsPresent, divHasProperClassTest, suite, theCategoriesLinkHasProperText, theGameLinkHasProperText, theTwoLinksHaveProperClasses, titleIsPresent, twoLinksAreDisplayed)
+module Step02.Tests exposing (aLinkToCategoriesIsPresent, aLinkToGameIsPresent, divHasProperClassTest, suite, theCategoriesLinkHasProperText, theGameLinkHasProperText, theTwoLinksHaveProperClasses, titleIsPresent, twoLinksAreDisplayed)
 
 import Expect
 import Fuzz exposing (intRange)

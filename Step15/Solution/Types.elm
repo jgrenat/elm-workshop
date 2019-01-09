@@ -1,4 +1,4 @@
-module Step15.Solution.Types exposing (..)
+module Step15.Solution.Types exposing (AnsweredQuestion, Category, Game, Model, Msg(..), Question, QuestionStatus(..), RemoteData(..), Route(..))
 
 import Http exposing (Error)
 import Navigation exposing (Location)

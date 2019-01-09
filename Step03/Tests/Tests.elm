@@ -1,17 +1,17 @@
-module Step03.Tests.Tests exposing (..)
+module Step03.Tests.Tests exposing (divHasProperClassTest, suite, replayLinkGoToHome, replayLinkIsPresent, replayLinkShouldHaveProperClasses, scoreIsPresent, titleIsPresent)
 
+import Expect
 import Fuzz exposing (intRange)
 import Html exposing (div)
+import Html.Attributes exposing (href)
 import Step03.ResultPage exposing (resultPage)
-import Test.Runner.Html exposing (run)
 import Test exposing (Test, describe, fuzz, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, class, classes, tag, text)
-import Expect
-import Html.Attributes exposing (href)
 
 
-main =
+suite : Test
+suite =
     describe "What we expect:"
         [ divHasProperClassTest
         , titleIsPresent
@@ -20,7 +20,6 @@ main =
         , replayLinkShouldHaveProperClasses
         , replayLinkGoToHome
         ]
-        |> run
 
 
 divHasProperClassTest : Test

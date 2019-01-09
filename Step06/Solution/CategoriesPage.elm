@@ -1,4 +1,4 @@
-module Step06.Solution.CategoriesPage exposing (..)
+module Step06.Solution.CategoriesPage exposing (Category, categories, categoriesPage, categoriesView, categoryView)
 
 import Html exposing (Html, a, div, h1, iframe, li, text, ul)
 import Html.Attributes exposing (class, href, src, style)
@@ -28,11 +28,11 @@ categoryView : Category -> Html msg
 categoryView category =
     let
         link =
-            "#game/category/" ++ toString category.id
+            "#game/category/" ++ String.fromInt category.id
     in
-        li []
-            [ a [ href link, class "btn btn-primary" ] [ text category.name ]
-            ]
+    li []
+        [ a [ href link, class "btn btn-primary" ] [ text category.name ]
+        ]
 
 
 categories : List Category

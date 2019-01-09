@@ -1,6 +1,6 @@
-module Step03.ResultPage exposing (..)
+module Step03.ResultPage exposing (main, resultPage)
 
-import Html exposing (Html, beginnerProgram, div, iframe, text)
+import Html exposing (Html, div, iframe, text)
 import Html.Attributes exposing (class, src, style)
 
 
@@ -20,5 +20,5 @@ resultPage score =
 main =
     div []
         [ div [ class "jumbotron" ] [ resultPage 3 ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
+        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
         ]

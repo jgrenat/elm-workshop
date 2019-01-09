@@ -1,17 +1,17 @@
-module Step06.Tests.Tests exposing (..)
+module Step06.Tests.Tests exposing (eachCategoryHasItsNameDisplayed, everyCategoriesAreDisplayed, getCategory, listOfCategoriesIsPresent, replayLinkShouldHaveProperClasses, replayLinkShouldHaveProperLink, suite, titleIsPresentWithProperText)
 
+import Expect
 import Fuzz exposing (intRange)
 import Html exposing (div)
+import Html.Attributes exposing (href)
 import Step06.CategoriesPage exposing (categories, categoriesPage)
-import Test.Runner.Html exposing (run)
 import Test exposing (Test, describe, fuzz, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, class, classes, tag, text)
-import Expect
-import Html.Attributes exposing (href)
 
 
-main =
+suite : Test
+suite =
     describe "What we expect:"
         [ titleIsPresentWithProperText
         , listOfCategoriesIsPresent
@@ -20,7 +20,6 @@ main =
         , replayLinkShouldHaveProperClasses
         , replayLinkShouldHaveProperLink
         ]
-        |> run
 
 
 titleIsPresentWithProperText : Test
@@ -78,21 +77,22 @@ replayLinkShouldHaveProperLink =
         \index ->
             let
                 link =
-                    (getCategory index) |> .id |> toString |> (++) "#game/category/"
+                    getCategory index |> .id |> String.fromInt |> (++) "#game/category/"
             in
-                categoriesPage
-                    |> Query.fromHtml
-                    |> Query.has [ tag "a", attribute (Html.Attributes.href link) ]
+            categoriesPage
+                |> Query.fromHtml
+                |> Query.has [ tag "a", attribute (Html.Attributes.href link) ]
 
 
 getCategory index =
     categories
         |> List.drop index
         |> List.head
-        |> \maybeCategory ->
-            case maybeCategory of
-                Just category ->
-                    category
+        |> (\maybeCategory ->
+                case maybeCategory of
+                    Just category ->
+                        category
 
-                Nothing ->
-                    Debug.crash ("Cannot find category with index " ++ (toString index) ++ ", have you touched the categories list?")
+                    Nothing ->
+                        Debug.crash ("Cannot find category with index " ++ toString index ++ ", have you touched the categories list?")
+           )

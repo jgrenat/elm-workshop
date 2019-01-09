@@ -1,16 +1,16 @@
-module Step09.Tests.Tests exposing (..)
+module Step09.Tests.Tests exposing (categoriesPageComponent, categoriesUrl, suite, theInitMethodRequestShouldBeAGETRequestToProperUrl, theInitMethodShouldFetchCategories, theInitModelShouldBeLoading, whenInitRequestCompletesTheModelShouldBeUpdated, whenInitRequestCompletesTheResultShouldBeDisplayed, whenInitRequestFailTheCategoriesShouldBeOnError, whenInitRequestFailThereShouldBeAnError, whenTheCategoriesAreLoadingAMessageShouldSaySo)
 
-import Fuzz
-import Http exposing (Error(NetworkError))
-import Step09.CategoriesPage as CategoriesPage exposing (Msg(..), RemoteData(..), Model)
-import Test.Runner.Html exposing (run)
-import Test exposing (Test, describe, fuzz, test)
 import Expect
+import Fuzz
 import Html.Attributes exposing (href)
-import Testable.Cmd
+import Http exposing (Error(..))
+import Step09.CategoriesPage as CategoriesPage exposing (Model, Msg(..), RemoteData(..))
+import Test exposing (Test, describe, fuzz, test)
+import Test.Runner.Html exposing (run)
 import Testable
-import Testable.TestContext exposing (..)
+import Testable.Cmd
 import Testable.Http
+import Testable.TestContext exposing (..)
 
 
 categoriesUrl : String
@@ -23,7 +23,8 @@ categoriesPageComponent =
     Component CategoriesPage.init CategoriesPage.update CategoriesPage.view
 
 
-main =
+suite : Test
+suite =
     describe "What we expect:"
         [ theInitMethodShouldFetchCategories
         , theInitModelShouldBeLoading
@@ -62,7 +63,7 @@ theInitMethodRequestShouldBeAGETRequestToProperUrl =
 
 whenTheCategoriesAreLoadingAMessageShouldSaySo : Test
 whenTheCategoriesAreLoadingAMessageShouldSaySo =
-    test ("When the request is loading, the following message should be displayed: \"Loading the categories...\"") <|
+    test "When the request is loading, the following message should be displayed: \"Loading the categories...\"" <|
         \() ->
             categoriesPageComponent
                 |> startForTest
@@ -71,18 +72,18 @@ whenTheCategoriesAreLoadingAMessageShouldSaySo =
 
 whenInitRequestFailTheCategoriesShouldBeOnError : Test
 whenInitRequestFailTheCategoriesShouldBeOnError =
-    test ("When the request fails, the model should keep track of that and there should be no command sent") <|
+    test "When the request fails, the model should keep track of that and there should be no command sent" <|
         \() ->
             let
                 model =
                     CategoriesPage.update (OnCategoriesFetched (Err NetworkError)) (Model Loading)
             in
-                Expect.equal ( Model OnError, Testable.Cmd.none ) model
+            Expect.equal ( Model OnError, Testable.Cmd.none ) model
 
 
 whenInitRequestFailThereShouldBeAnError : Test
 whenInitRequestFailThereShouldBeAnError =
-    test ("When the request fails, the following error message should be displayed: \"An error occurred while loading the categories\"") <|
+    test "When the request fails, the following error message should be displayed: \"An error occurred while loading the categories\"" <|
         \() ->
             categoriesPageComponent
                 |> startForTest
@@ -92,18 +93,18 @@ whenInitRequestFailThereShouldBeAnError =
 
 whenInitRequestCompletesTheModelShouldBeUpdated : Test
 whenInitRequestCompletesTheModelShouldBeUpdated =
-    fuzz (Fuzz.string) ("When the request completes, the model should store the string returned and there should be no command sent") <|
+    fuzz Fuzz.string "When the request completes, the model should store the string returned and there should be no command sent" <|
         \randomResponse ->
             let
                 model =
                     CategoriesPage.update (OnCategoriesFetched (Ok randomResponse)) (Model Loading)
             in
-                Expect.equal ( Model (Loaded randomResponse), Testable.Cmd.none ) model
+            Expect.equal ( Model (Loaded randomResponse), Testable.Cmd.none ) model
 
 
 whenInitRequestCompletesTheResultShouldBeDisplayed : Test
 whenInitRequestCompletesTheResultShouldBeDisplayed =
-    fuzz (Fuzz.string) ("When the request completes, the resulting string should be displayed") <|
+    fuzz Fuzz.string "When the request completes, the resulting string should be displayed" <|
         \randomResponse ->
             categoriesPageComponent
                 |> startForTest

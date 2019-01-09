@@ -1,7 +1,8 @@
-module Step07.UserStatus exposing (..)
+module Step07.UserStatus exposing (Msg(..), UserStatus(..), displayTests, initialModel, main, message, update, userStatusForm, view)
 
-import Html exposing (Html, a, beginnerProgram, div, h1, iframe, input, label, li, p, span, text, ul)
-import Html.Attributes exposing (class, for, href, id, selected, src, style, type_, name)
+import Browser
+import Html exposing (Html, a, div, h1, iframe, input, label, li, p, span, text, ul)
+import Html.Attributes exposing (class, for, href, id, name, selected, src, style, type_)
 import Html.Events exposing (onClick)
 
 
@@ -9,7 +10,7 @@ import Html.Events exposing (onClick)
 You don't need to modify it.
 -}
 main =
-    beginnerProgram { model = initialModel, view = view, update = update }
+    Browser.sandbox { init = initialModel, view = view, update = update }
 
 
 {-| Modify this union type to fit our needs.
@@ -97,4 +98,4 @@ update message userStatus =
 
 displayTests : Html Msg
 displayTests =
-    iframe [ src "./Tests/index.html", class "mt-2 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
+    iframe [ src "./Tests/index.html", class "mt-2 w-75 mx-auto d-block", style "height" "500px" ] []

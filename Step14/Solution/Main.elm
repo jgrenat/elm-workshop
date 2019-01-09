@@ -1,12 +1,12 @@
-module Step14.Solution.Main exposing (..)
+module Step14.Solution.Main exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), Route(..), answersDecoder, categoriesDecoder, correctAnswerDecoder, displayAnswer, displayCategoriesList, displayCategoriesPage, displayCategory, displayGamePage, displayHomepage, displayPage, displayResultPage, displayTestsAndView, gamePage, getCategoriesRequest, getCategoriesUrl, getQuestionsRequest, init, initialCommand, initialModel, main, matcher, parseLocation, questionDecoder, questionsDecoder, questionsUrl, update, view)
 
-import Html exposing (Html, a, button, div, h1, iframe, li, text, ul, h2)
+import Html exposing (Html, a, button, div, h1, h2, iframe, li, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Http
-import Result exposing (Result)
 import Json.Decode as Decode
-import UrlParser exposing (..)
 import Navigation exposing (Location)
+import Result exposing (Result)
+import UrlParser exposing (..)
 
 
 questionsUrl : String
@@ -22,7 +22,7 @@ getCategoriesUrl =
 main : Program Never Model Msg
 main =
     Navigation.program OnLocationChange
-        { init = init, update = update, view = displayTestsAndView, subscriptions = (\model -> Sub.none) }
+        { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
 
 
 type Msg
@@ -97,12 +97,12 @@ initialCommand route =
         getQuestionsCmd =
             Http.send OnQuestionsFetched getQuestionsRequest
     in
-        case route of
-            GameRoute Loading ->
-                Cmd.batch [ getQuestionsCmd, getCategoriesCmd ]
+    case route of
+        GameRoute Loading ->
+            Cmd.batch [ getQuestionsCmd, getCategoriesCmd ]
 
-            _ ->
-                getCategoriesCmd
+        _ ->
+            getCategoriesCmd
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -111,7 +111,7 @@ init location =
         route =
             parseLocation location
     in
-        ( initialModel route, initialCommand route )
+    ( initialModel route, initialCommand route )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -126,16 +126,18 @@ update msg model =
         OnQuestionsFetched (Ok (firstQuestion :: remainingQuestions)) ->
             if model.route /= GameRoute Loading then
                 ( model, Cmd.none )
+
             else
                 let
                     game =
                         Game firstQuestion remainingQuestions
                 in
-                    ( { model | route = GameRoute (Loaded game) }, Cmd.none )
+                ( { model | route = GameRoute (Loaded game) }, Cmd.none )
 
         OnQuestionsFetched _ ->
             if model.route /= GameRoute Loading then
                 ( model, Cmd.none )
+
             else
                 ( { model | route = GameRoute OnError }, Cmd.none )
 
@@ -147,10 +149,11 @@ update msg model =
                 command =
                     if route == GameRoute Loading then
                         Http.send OnQuestionsFetched getQuestionsRequest
+
                     else
                         Cmd.none
             in
-                ( { model | route = parseLocation location }, command )
+            ( { model | route = parseLocation location }, command )
 
 
 categoriesDecoder : Decode.Decoder (List Category)
@@ -207,7 +210,7 @@ displayCategoriesPage categories =
 displayResultPage : Int -> Html Msg
 displayResultPage score =
     div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ (toString score) ++ " / 5") ]
+        [ h1 [] [ text ("Your score: " ++ toString score ++ " / 5") ]
         , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
         ]
 
@@ -230,11 +233,11 @@ displayCategory : Category -> Html Msg
 displayCategory category =
     let
         path =
-            "#game/category/" ++ (toString category.id)
+            "#game/category/" ++ toString category.id
     in
-        li []
-            [ a [ class "btn btn-primary", href path ] [ text category.name ]
-            ]
+    li []
+        [ a [ class "btn btn-primary", href path ] [ text category.name ]
+        ]
 
 
 getQuestionsRequest : Http.Request (List Question)
