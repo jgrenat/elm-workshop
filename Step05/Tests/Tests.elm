@@ -1,18 +1,25 @@
 module Step06.Tests.Tests exposing (eachCategoryHasItsNameDisplayed, everyCategoriesAreDisplayed, getCategory, listOfCategoriesIsPresent, replayLinkShouldHaveProperClasses, replayLinkShouldHaveProperLink, suite, titleIsPresentWithProperText)
 
-import Expect
+import Expect exposing (fail)
 import Fuzz exposing (intRange)
-import Html exposing (div)
-import Html.Attributes exposing (href)
-import Step06.CategoriesPage exposing (categories, categoriesPage)
-import Test exposing (Test, describe, fuzz, test)
+import Html exposing (Html)
+import Html.Attributes
+import Random
+import Step05.CategoriesPage exposing (Category, categories, categoriesPage)
+import Test exposing (Test, concat, fuzz, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, class, classes, tag, text)
+import Test.Runner.Html exposing (defaultConfig, viewResults)
+
+
+main : Html a
+main =
+    viewResults (Random.initialSeed 1000 |> defaultConfig) suite
 
 
 suite : Test
 suite =
-    describe "What we expect:"
+    concat
         [ titleIsPresentWithProperText
         , listOfCategoriesIsPresent
         , everyCategoriesAreDisplayed
@@ -54,11 +61,19 @@ everyCategoriesAreDisplayed =
 
 eachCategoryHasItsNameDisplayed : Test
 eachCategoryHasItsNameDisplayed =
-    fuzz (intRange 0 22) "Each category has its name displayed" <|
+    fuzz (intRange 0 23) "Each category has its name displayed" <|
         \categoryIndex ->
-            categoriesPage
-                |> Query.fromHtml
-                |> Query.has [ getCategory categoryIndex |> .name |> text ]
+            case getCategory categoryIndex of
+                Just category ->
+                    categoriesPage
+                        |> Query.fromHtml
+                        |> Query.has [ text category.name ]
+
+                Nothing ->
+                    "Cannot find category with index "
+                        ++ String.fromInt categoryIndex
+                        ++ ", have you touched the categories list?"
+                        |> fail
 
 
 replayLinkShouldHaveProperClasses : Test
@@ -73,26 +88,32 @@ replayLinkShouldHaveProperClasses =
 
 replayLinkShouldHaveProperLink : Test
 replayLinkShouldHaveProperLink =
-    fuzz (intRange 0 22) "Each category have the proper link" <|
-        \index ->
+    fuzz (intRange 0 23) "Each category have the proper link" <|
+        \categoryIndex ->
             let
-                link =
-                    getCategory index |> .id |> String.fromInt |> (++) "#game/category/"
+                linkMaybe =
+                    getCategory categoryIndex
+                        |> Maybe.map
+                            (.id
+                                >> String.fromInt
+                                >> (++) "#game/category/"
+                            )
             in
-            categoriesPage
-                |> Query.fromHtml
-                |> Query.has [ tag "a", attribute (Html.Attributes.href link) ]
+            case linkMaybe of
+                Just link ->
+                    categoriesPage
+                        |> Query.fromHtml
+                        |> Query.has [ tag "a", attribute (Html.Attributes.href link) ]
+
+                Nothing ->
+                    "Cannot find category with index "
+                        ++ String.fromInt categoryIndex
+                        ++ ", have you touched the categories list?"
+                        |> fail
 
 
+getCategory : Int -> Maybe Category
 getCategory index =
     categories
         |> List.drop index
         |> List.head
-        |> (\maybeCategory ->
-                case maybeCategory of
-                    Just category ->
-                        category
-
-                    Nothing ->
-                        Debug.crash ("Cannot find category with index " ++ toString index ++ ", have you touched the categories list?")
-           )

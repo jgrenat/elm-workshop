@@ -1,19 +1,12 @@
-module Step06.CategoriesPage exposing (Category, categories, categoriesPage, main)
+module Step04.Solution.CategoriesPage exposing (Category, categories, main)
 
-import Html exposing (Html, a, div, h1, iframe, li, text, ul)
-import Html.Attributes exposing (class, href, src, style)
+import Html exposing (Html, text)
 
 
 type alias Category =
     { id : Int
     , name : String
     }
-
-
-categoriesPage : Html msg
-categoriesPage =
-    div []
-        [ text "Content of the page" ]
 
 
 categories : List Category
@@ -45,14 +38,6 @@ categories =
     ]
 
 
-
-------------------------------------------------------------------------------------------------------------------------
--- You don't need to worry about the code below, it only displays the result of your code and the result of the tests --
-------------------------------------------------------------------------------------------------------------------------
-
-
+main : Html msg
 main =
-    div []
-        [ div [ class "jumbotron" ] [ categoriesPage ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
-        ]
+    text "Congrats it works! Go to next step!"

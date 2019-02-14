@@ -1,15 +1,14 @@
-module Step03.ResultPage exposing (main, resultPage)
+module Step02.ResultPage exposing (main, resultPage)
 
-import Html exposing (Html, a, div, h1, p, text)
-import Html.Attributes exposing (class, href)
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
 import Utils.Utils exposing (styles, testsIframe)
 
 
 resultPage : Int -> Html msg
 resultPage score =
-    div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ String.fromInt score ++ " / 5") ]
-        , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
+    div []
+        [ text "Content should go here"
         ]
 
 

@@ -1,38 +1,7 @@
-module Step06.Solution.CategoriesPage exposing (Category, categories, categoriesPage, categoriesView, categoryView)
+module Step04.CategoriesPage exposing (categories, main)
 
-import Html exposing (Html, a, div, h1, iframe, li, text, ul)
-import Html.Attributes exposing (class, href, src, style)
-
-
-type alias Category =
-    { id : Int
-    , name : String
-    }
-
-
-categoriesPage : Html msg
-categoriesPage =
-    div []
-        [ h1 []
-            [ text "Play within a given category" ]
-        , ul [ class "categories" ] categoriesView
-        ]
-
-
-categoriesView : List (Html msg)
-categoriesView =
-    List.map categoryView categories
-
-
-categoryView : Category -> Html msg
-categoryView category =
-    let
-        link =
-            "#game/category/" ++ String.fromInt category.id
-    in
-    li []
-        [ a [ href link, class "btn btn-primary" ] [ text category.name ]
-        ]
+import Html exposing (Html, a, span, strong, text)
+import Html.Attributes exposing (href)
 
 
 categories : List Category
@@ -62,3 +31,15 @@ categories =
     , { id = 31, name = "Entertainment: Japanese Anime & Manga" }
     , { id = 32, name = "Entertainment: Cartoon & Animations" }
     ]
+
+
+type alias Category =
+    { id : Int, name : String }
+
+
+main : Html msg
+main =
+    span []
+        [ text "Congrats it works! "
+        , strong [] [ a [ href "../Step05/" ] [ text "Go to next step -->" ] ]
+        ]

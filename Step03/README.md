@@ -1,39 +1,31 @@
-# Étape 3 : Concevons la page de résultat !
+# Step 3: Let's go further with the results page!
 
-## Objectif
+## Goal
 
-Nous allons maintenant réaliser la page de résultat. Celle-ci est très simple et peu dynamique, mais va nous permettre de voir une ou deux nouvelles notions.
+This results page is a bit too static to my tastes. It would be nice to display a comment depending on the score! For example:
 
-<img alt="Screenshot of the page to realize" src="../images/step3.png" style="width: 100%; border: 1px solid black;">
+![Screenshot of the page to realize](../Utils/images/step4.png)
 
-Voici la structure que vous devez réaliser en HTML :
+Here is the HTML you'll need to produce:
 
 ```html
 <div class="score">
-    <p>Your score: 3 / 5</p>
+    <h1>Your score: 3 / 5</h1>
+    <p>Keep going, I'm sure you can do better!</p>
     <a class="btn btn-primary" href="#">Replay</a>
 </div>
 ```
 
-Pour cela, ouvrez le fichier `./ResultPage.elm` dans votre IDE et commencez à bidouiller le code pour obtenir le rendu désiré !
+To do so, open the file [`./ResultPage.elm`](./ResultPage.elm) and add what's missing! We want to choose between these two comments depending on the score:
 
-
-## Quelques pistes
-
-Attention, comparé à avant, tous les imports n'ont pas été faits. Vous devrez donc rajouter ce qu'il vous manque aux imports du début de fichier. Pas de surprise, le nom de l'import correspond au nom de la balise que vous désirez utiliser !
-
-```elm
--- Rajoutez vos imports de balises ici
-import Html exposing (Html, beginnerProgram, div, iframe, text) 
--- Rajoutez vos imports d'attributs ici
-import Html.Attributes exposing (class, src, style)
-```
-
-Vous aurez également besoin d'utiliser un argument à votre fonction resultPage. Celui-ci est un `Int` et vous aurez besoin de le convertir en `String` pour l'afficher. Peut-être qu'une [fonction sur ce lien](http://package.elm-lang.org/packages/elm-lang/core/1.0.0/Basics) pourra vous aider ! (*Pas besoin d'importer le module Basics, il est déjà importé par défaut dans vos programmes Elm.*)
+ - If the score is comprised between 0 and 3 (included), display: `Keep going, I'm sure you can do better!`
+ - Else, display: `Congrats, this is really good!`
+ 
+ Be careful to copy/paste the exact same phrases, the tests are pretty strict ;-)
 
 
 ## Let's start!
-[Lien vers le rendu](./index.html) (pensez à actualiser pour voir vos changements)
+[See the result of your code](./ResultPage.elm) (don't forget to refresh to see changes)
 
 
-<div style="text-align: right;"><a href="../Step04">Étape suivante --&gt;</a></div>
+Once the tests are passing, you can go to the [next step](../Step04).

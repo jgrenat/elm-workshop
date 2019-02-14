@@ -1,4 +1,4 @@
-# Set up
+# Welcome!
 
 Today, we will try to learn Elm together. Before starting to develop in Elm, we need to follow some instructions to have a working dev environment.
 

@@ -1,73 +1,43 @@
-# Quiz Game
+# Step 2: Results Page!
 
-L'objectif de ce workshop est de réaliser une petite application web de quiz. Étape par étape, nous allons réaliser ce petit jeu avec des fonctionnalités de base, passant en revue les éléments du langage Elm.
+## Goal
 
-Vous pouvez voir le rendu de l'application que nous allons réaliser ici: [https://trivia-game.surge.sh](https://trivia-game.surge.sh) 
+We will now create the results page. This is a really simple one but it will allow us to see some new notions.
 
+![Screenshot of the expected result](../Utils/images/step3.png)
 
-## Objectif
-
-Dans cette étape 2, nous allons réaliser l'apparence de la page d'accueil. Comme vous pouvez le voir sur le screen ci-dessous, celle-ci contient un titre et deux boutons.
-
-<img alt="Screenshot of the page to realize" src="../images/step2.png" style="width: 100%; border: 1px solid black;">
-
-Voici la structure que vous devez réaliser en HTML:
+Belo‹ you can see the HTML structure that is expected:
 
 ```html
-<div class="gameOptions">
-    <h1>Quiz Game</h1>
-    
-    <a class="btn btn-primary" href="#game">
-        Play random questions
-    </a>
-    
-    <a class="btn btn-primary" href="#categories">
-        Play from a category
-    </a>
+<div class="score">
+    <p>Your score: 3 / 5</p>
+    <a class="btn btn-primary" href="#">Replay</a>
 </div>
 ```
 
-Pour cela, ouvrez le fichier `./HomePage.elm` dans votre IDE et commencez à bidouiller le code pour obtenir le rendu désiré !
+Be careful, the value won't always be `3`, it is given through an argument to your function.
 
-Des tests vous guideront pour obtenir le résultat désiré.
+You can now open in your IDE the file `./ResultPage.elm` and start to code!
 
 
-## En Elm, le HTML... c'est du Elm !
+## Some hints
 
-Pour ça on utilise des fonctions contenues dans un module `Html`. Comme vous pouvez le voir, elles sont importées au début du fichier `HomePage.elm` :
-
-```elm
-import Html exposing (Html, beginnerProgram, a, div, h1, text)
-```
-
-Vous pouvez ensuite utiliser les fonctions de la façon suivante : 
+Be careful, this time all the exports needed are not done, you will need to add some functions to the imports lists at the beginning of the file! No surprise, the names are the same than the tags you want to use in HTML!
 
 ```elm
-div [] []
-
+-- Add your imports below
+import Html exposing (Html, div, text) 
+-- Add the attributes you need below
+import Html.Attributes exposing (class)
 ```
 
-Comme vous pouvez le voir, une fonction HTML possède généralement deux arguments. Le premier correspondant aux différents attributs de votre balise, et le second au contenu de votre balise. Voici quelques exemples :
+As we've said before, you will need to use the argument `page` given to your function `resultPage`. This is an `Int` and you will need to convert it to a `String` to display it. 
 
-```elm
-div [ class "myClass" ] []
-
-div [] [ text "content of my div" ]
-
-div [] [ div [] [ text "another div inside the first one" ] ]
-
-div [] 
-    [ span [] [ text "two spans inside" ]
-    , span [] [ text "a parent div" ]
-    ]
-```
-
-A vous de jouer, utilisez les différentes fonctions à votre disposition pour générer le HTML attendu !
-
+Maybe you can find a helpful function [on this page](https://package.elm-lang.org/packages/elm/core/latest/String). (*There is no need to import the module `Basics`, it's already imported by default in your Elm programs.*)
 
 
 ## Let's start!
-[Lien vers le rendu](./index.html) (pensez à actualiser)
+[See the result of your code](./ResultPage.elm) (don't forget to refresh to see changes)
 
 
-<div style="text-align: right;"><a href="../Step03">Étape suivante --&gt;</a></div>
+Once the tests are passing, you can go to the [next step](../Step03).

@@ -1,12 +1,22 @@
-module Step03.Solution.ResultPage exposing (resultPage)
+module Step03.Solution.ResultPage exposing (comment, resultPage)
 
-import Html exposing (Html, a, div, h1, iframe, text)
-import Html.Attributes exposing (class, href, src, style)
+import Html exposing (Html, a, div, h1, p, text)
+import Html.Attributes exposing (class, href)
+
+
+comment : Int -> String
+comment score =
+    if score <= 3 then
+        "Keep going, I'm sure you can do better!"
+
+    else
+        "Congrats, this is really good!"
 
 
 resultPage : Int -> Html msg
 resultPage score =
     div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ String.fromInt score) ]
+        [ h1 [] [ text ("Your score: " ++ String.fromInt score ++ " / 5") ]
         , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
+        , p [] [ text (comment score) ]
         ]
