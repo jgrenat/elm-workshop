@@ -1,8 +1,8 @@
-module Step07.Solution.UserStatus exposing (Msg(..), UserStatus(..), initialModel, main, messageToShow, update, userStatusForm, view)
+module Step06.Solution.UserStatus exposing (initialModel, main, update, view)
 
 import Browser
-import Html exposing (Html, a, div, h1, iframe, input, label, li, p, span, text, ul)
-import Html.Attributes exposing (class, for, href, id, name, selected, src, style, type_)
+import Html exposing (Html, div, input, label, p, text)
+import Html.Attributes exposing (class, for, id, name, type_)
 import Html.Events exposing (onClick)
 
 
@@ -29,14 +29,14 @@ view : UserStatus -> Html Msg
 view userStatus =
     div []
         [ div [ class "jumbotron" ]
-            [ userStatusForm userStatus
-            , p [] [ messageToShow userStatus ]
+            [ userStatusForm
+            , p [] [ statusMessage userStatus ]
             ]
         ]
 
 
-userStatusForm : UserStatus -> Html Msg
-userStatusForm userStatus =
+userStatusForm : Html Msg
+userStatusForm =
     div [ class "mb-3" ]
         [ input
             [ id "underage"
@@ -57,8 +57,8 @@ userStatusForm userStatus =
         ]
 
 
-messageToShow : UserStatus -> Html Msg
-messageToShow userStatus =
+statusMessage : UserStatus -> Html Msg
+statusMessage userStatus =
     case userStatus of
         Underage ->
             text "You are underage"

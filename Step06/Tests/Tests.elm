@@ -1,18 +1,25 @@
-module Step07.Tests.Tests exposing (atFirstThereShouldBeNoMessage, suite, whenFirstRadioButtonIsClickedUserShouldBeUnderage, whenSecondRadioButtonIsClickedUserShouldBeAdult)
+module Step06.Tests.Tests exposing (main)
 
 import Expect
-import Html exposing (div)
-import Html.Attributes exposing (href, type_)
-import Step07.UserStatus exposing (initialModel, update, view)
-import Test exposing (Test, describe, test)
+import Html exposing (Html)
+import Html.Attributes exposing (type_)
+import Random
+import Step06.UserStatus exposing (initialModel, update, view)
+import Test exposing (Test, concat, test)
 import Test.Html.Event as Event
 import Test.Html.Query as Query
-import Test.Html.Selector exposing (attribute, tag, text)
+import Test.Html.Selector exposing (attribute, text)
+import Test.Runner.Html exposing (defaultConfig, viewResults)
+
+
+main : Html a
+main =
+    viewResults (Random.initialSeed 1000 |> defaultConfig) suite
 
 
 suite : Test
 suite =
-    describe "What we expect:"
+    concat
         [ atFirstThereShouldBeNoMessage
         , whenFirstRadioButtonIsClickedUserShouldBeUnderage
         , whenSecondRadioButtonIsClickedUserShouldBeAdult

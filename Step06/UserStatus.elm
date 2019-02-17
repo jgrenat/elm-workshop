@@ -1,9 +1,10 @@
-module Step07.UserStatus exposing (Msg(..), UserStatus(..), displayTests, initialModel, main, message, update, userStatusForm, view)
+module Step06.UserStatus exposing (initialModel, main, update, view)
 
 import Browser
-import Html exposing (Html, a, div, h1, iframe, input, label, li, p, span, text, ul)
-import Html.Attributes exposing (class, for, href, id, name, selected, src, style, type_)
+import Html exposing (Html, div, input, label, p, text)
+import Html.Attributes exposing (class, for, id, name, type_)
 import Html.Events exposing (onClick)
+import Utils.Utils exposing (styles, testsIframe)
 
 
 {-| This line creates a program with everything it needs (see the README)
@@ -14,7 +15,7 @@ main =
 
 
 {-| Modify this union type to fit our needs.
-It should contain three values: NotSpecified, UnderAge et Adult.
+It should contain three values: NotSpecified, UnderAge and Adult.
 -}
 type UserStatus
     = ModifyThisType
@@ -33,16 +34,16 @@ initialModel =
     ModifyThisType
 
 
-{-| Don't modify this function, it displays everything you need, and it also displays the tests.
+{-| Don't modify this function, it displays everything you need and also displays the tests.
 -}
 view : UserStatus -> Html Msg
 view userStatus =
     div []
         [ div [ class "jumbotron" ]
-            [ userStatusForm userStatus
-            , p [] [ message userStatus ]
+            [ userStatusForm
+            , p [] [ statusMessage userStatus ]
             ]
-        , displayTests
+        , displayTestsAndStyle
         ]
 
 
@@ -50,8 +51,8 @@ view userStatus =
 You can see how `onClick` is used to send a message `UserStatusSelected` with a value of `ModifyThisType`.
 Once you have changed the UserStatus type, you can change the messages here
 -}
-userStatusForm : UserStatus -> Html Msg
-userStatusForm userStatus =
+userStatusForm : Html Msg
+userStatusForm =
     div [ class "mb-3" ]
         [ input
             [ id "underage"
@@ -74,11 +75,11 @@ userStatusForm userStatus =
 
 {-| Customize this message according to the user status. If the status is not specified, just return an empty text.
 -}
-message : UserStatus -> Html Msg
-message userStatus =
+statusMessage : UserStatus -> Html Msg
+statusMessage userStatus =
     case userStatus of
         ModifyThisType ->
-            text "Personnalize the message according to the user status"
+            text "Personalize the message according to the user status"
 
 
 {-| Update the model according to the message received
@@ -96,6 +97,6 @@ update message userStatus =
 -----------------------------------------------------------------------------------------
 
 
-displayTests : Html Msg
-displayTests =
-    iframe [ src "./Tests/index.html", class "mt-2 w-75 mx-auto d-block", style "height" "500px" ] []
+displayTestsAndStyle : Html Msg
+displayTestsAndStyle =
+    div [] [ styles, testsIframe ]
