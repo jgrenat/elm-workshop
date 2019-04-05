@@ -1,98 +1,104 @@
-module Step06.Tests.Tests exposing (..)
+module Step06.Tests.Tests exposing (main)
 
-import Fuzz exposing (intRange)
-import Html exposing (div)
-import Step06.CategoriesPage exposing (categories, categoriesPage)
-import Test.Runner.Html exposing (run)
-import Test exposing (Test, describe, fuzz, test)
-import Test.Html.Query as Query
-import Test.Html.Selector exposing (attribute, class, classes, tag, text)
 import Expect
-import Html.Attributes exposing (href)
+import Html exposing (Html)
+import Html.Attributes exposing (type_)
+import Random
+import Step06.UserStatus exposing (initialModel, update, view)
+import Test exposing (Test, concat, test)
+import Test.Html.Event as Event
+import Test.Html.Query as Query
+import Test.Html.Selector exposing (attribute, text)
+import Test.Runner.Html exposing (defaultConfig, viewResults)
 
 
+main : Html a
 main =
-    describe "What we expect:"
-        [ titleIsPresentWithProperText
-        , listOfCategoriesIsPresent
-        , everyCategoriesAreDisplayed
-        , eachCategoryHasItsNameDisplayed
-        , replayLinkShouldHaveProperClasses
-        , replayLinkShouldHaveProperLink
+    viewResults (Random.initialSeed 1000 |> defaultConfig) suite
+
+
+suite : Test
+suite =
+    concat
+        [ atFirstThereShouldBeNoMessage
+        , whenFirstRadioButtonIsClickedUserShouldBeUnderage
+        , whenSecondRadioButtonIsClickedUserShouldBeAdult
         ]
-        |> run
 
 
-titleIsPresentWithProperText : Test
-titleIsPresentWithProperText =
-    test "There should be a title with the proper text \"Play within a given category\"" <|
+atFirstThereShouldBeNoMessage : Test
+atFirstThereShouldBeNoMessage =
+    test "At first there should be no message displayed" <|
         \() ->
-            categoriesPage
-                |> Query.fromHtml
-                |> Query.find [ tag "h1" ]
-                |> Query.has [ text "Play within a given category" ]
+            Expect.all
+                [ Query.hasNot [ text "You are underage" ]
+                , Query.hasNot [ text "You are an adult" ]
+                ]
+                (view initialModel |> Query.fromHtml)
 
 
-listOfCategoriesIsPresent : Test
-listOfCategoriesIsPresent =
-    test "There should be an 'ul' tag with the class \"categories\"" <|
+whenFirstRadioButtonIsClickedUserShouldBeUnderage : Test
+whenFirstRadioButtonIsClickedUserShouldBeUnderage =
+    test "When we click on the first radio button, a message \"You are underage\" should appear" <|
         \() ->
-            categoriesPage
-                |> Query.fromHtml
-                |> Query.find [ tag "ul" ]
-                |> Query.has [ class "categories" ]
-
-
-everyCategoriesAreDisplayed : Test
-everyCategoriesAreDisplayed =
-    test "There are 24 'li' tags displayed, one for each category" <|
-        \() ->
-            categoriesPage
-                |> Query.fromHtml
-                |> Query.findAll [ tag "li" ]
-                |> Query.count (Expect.equal 24)
-
-
-eachCategoryHasItsNameDisplayed : Test
-eachCategoryHasItsNameDisplayed =
-    fuzz (intRange 0 22) "Each category has its name displayed" <|
-        \categoryIndex ->
-            categoriesPage
-                |> Query.fromHtml
-                |> Query.has [ getCategory categoryIndex |> .name |> text ]
-
-
-replayLinkShouldHaveProperClasses : Test
-replayLinkShouldHaveProperClasses =
-    test "Each link has the classes \"btn btn-primary\"" <|
-        \() ->
-            categoriesPage
-                |> Query.fromHtml
-                |> Query.findAll [ tag "a" ]
-                |> Query.each (Query.has [ classes [ "btn", "btn-primary" ] ])
-
-
-replayLinkShouldHaveProperLink : Test
-replayLinkShouldHaveProperLink =
-    fuzz (intRange 0 22) "Each category have the proper link" <|
-        \index ->
             let
-                link =
-                    (getCategory index) |> .id |> toString |> (++) "#game/category/"
+                messageTriggered =
+                    view initialModel
+                        |> Query.fromHtml
+                        |> Query.findAll [ attribute (type_ "radio") ]
+                        |> Query.first
+                        |> Event.simulate Event.click
+                        |> Event.toResult
+
+                updatedModel =
+                    messageTriggered
+                        |> Result.map (\msg -> update msg initialModel)
+
+                updatedView =
+                    updatedModel
+                        |> Result.map (\model -> view model)
+                        |> Result.map Query.fromHtml
             in
-                categoriesPage
-                    |> Query.fromHtml
-                    |> Query.has [ tag "a", attribute (Html.Attributes.href link) ]
+            Expect.all
+                [ \result ->
+                    result
+                        |> Result.map (Query.has [ text "You are underage" ])
+                        |> Result.withDefault (Expect.fail "\"You are underage\" should be present")
+                , \result ->
+                    Result.map (Query.hasNot [ text "You are an adult" ]) result
+                        |> Result.withDefault (Expect.fail "\"You are an adult\" should not be present")
+                ]
+                updatedView
 
 
-getCategory index =
-    categories
-        |> List.drop index
-        |> List.head
-        |> \maybeCategory ->
-            case maybeCategory of
-                Just category ->
-                    category
+whenSecondRadioButtonIsClickedUserShouldBeAdult : Test
+whenSecondRadioButtonIsClickedUserShouldBeAdult =
+    test "When we click on the second radio button, a message \"You are an adult\" should appear" <|
+        \() ->
+            let
+                messageTriggered =
+                    view initialModel
+                        |> Query.fromHtml
+                        |> Query.findAll [ attribute (type_ "radio") ]
+                        |> Query.index 1
+                        |> Event.simulate Event.click
+                        |> Event.toResult
 
-                Nothing ->
-                    Debug.crash ("Cannot find category with index " ++ (toString index) ++ ", have you touched the categories list?")
+                updatedModel =
+                    messageTriggered
+                        |> Result.map (\msg -> update msg initialModel)
+
+                updatedView =
+                    updatedModel
+                        |> Result.map (\model -> view model)
+                        |> Result.map Query.fromHtml
+            in
+            Expect.all
+                [ \result ->
+                    Result.map (Query.hasNot [ text "You are underage" ]) result
+                        |> Result.withDefault (Expect.fail "\"You are underage\" should not be present")
+                , \result ->
+                    Result.map (Query.has [ text "You are an adult" ]) result
+                        |> Result.withDefault (Expect.fail "\"You are an adult\" should be present")
+                ]
+                updatedView

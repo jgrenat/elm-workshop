@@ -3,7 +3,7 @@ module Step15.Solution.Update exposing (update)
 import Navigation
 import Step15.Solution.Api exposing (getQuestionsCommand)
 import Step15.Solution.Routing exposing (parseLocation)
-import Step15.Solution.Types exposing (AnsweredQuestion, Category, Game, Model, Msg(..), Question, QuestionStatus(Correct, Incorrect), RemoteData(..), Route(..))
+import Step15.Solution.Types exposing (AnsweredQuestion, Category, Game, Model, Msg(..), Question, QuestionStatus(..), RemoteData(..), Route(..))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,7 +23,7 @@ update msg model =
                 game =
                     Game [] currentQuestion remainingQuestions
             in
-                ( { model | route = GameRoute (Loaded game) }, Cmd.none )
+            ( { model | route = GameRoute (Loaded game) }, Cmd.none )
 
         OnQuestionsFetched (Err _) ->
             ( { model | route = GameRoute OnError }, Cmd.none )
@@ -35,26 +35,27 @@ update msg model =
                         responseStatus =
                             if answer == game.currentQuestion.correctAnswer then
                                 Correct
+
                             else
                                 Incorrect
 
                         answeredQuestions =
                             AnsweredQuestion game.currentQuestion responseStatus :: game.answeredQuestions
                     in
-                        case game.remainingQuestions of
-                            [] ->
-                                let
-                                    score =
-                                        calculateScore answeredQuestions
-                                in
-                                    ( { model | route = ResultRoute score }, Navigation.newUrl ("#result/" ++ (toString score)) )
+                    case game.remainingQuestions of
+                        [] ->
+                            let
+                                score =
+                                    calculateScore answeredQuestions
+                            in
+                            ( { model | route = ResultRoute score }, Navigation.newUrl ("#result/" ++ toString score) )
 
-                            newQuestion :: remainingQuestions ->
-                                let
-                                    newGame =
-                                        Game answeredQuestions newQuestion remainingQuestions
-                                in
-                                    ( { model | route = GameRoute (Loaded newGame) }, Cmd.none )
+                        newQuestion :: remainingQuestions ->
+                            let
+                                newGame =
+                                    Game answeredQuestions newQuestion remainingQuestions
+                            in
+                            ( { model | route = GameRoute (Loaded newGame) }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -72,7 +73,7 @@ update msg model =
                         _ ->
                             Cmd.none
             in
-                ( { model | route = route }, command )
+            ( { model | route = route }, command )
 
 
 calculateScore : List AnsweredQuestion -> Int
@@ -83,9 +84,10 @@ calculateScore answeredQuestions =
                 (\answer ->
                     if answer.status == Correct then
                         1
+
                     else
                         0
                 )
                 answeredQuestions
     in
-        List.foldl (+) 0 scores
+    List.foldl (+) 0 scores

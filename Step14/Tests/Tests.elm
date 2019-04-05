@@ -1,16 +1,16 @@
-module Step14.Tests.Tests exposing (..)
+module Step14.Tests.Tests exposing (atBasePathHomepageShouldBeDisplayed, atLoadingCategoriesShouldBeFetched, categoriesUrl, expectedGetCategoriesCmd, fakeLocation, main, questionsUrl, whenGoingToCategoriesPathCategoriesShouldBeDisplayed, whenGoingToGamePathGamePageShouldBeDisplayed, whenGoingToGamePathQuestionsShouldBeFetched, whenGoingToResultPathResultShouldBeDisplayed, whenGoingToResultPathResultShouldBeDisplayedWithProperScore)
 
+import Expect exposing (Expectation)
 import Fuzz exposing (intRange)
-import Http exposing (Error(NetworkError))
-import Step14.Main exposing (Msg(OnCategoriesFetched, OnLocationChange), categoriesDecoder, init, update, view)
+import Html.Attributes exposing (href, type_)
+import Http exposing (Error(..))
+import Json.Encode as Encode
+import Step14.Main exposing (Msg(..), categoriesDecoder, init, update, view)
+import Test exposing (Test, describe, fuzz, test)
+import Test.Html.Event exposing (click, simulate, toResult)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, text)
-import Test.Html.Event exposing (simulate, toResult, click)
 import Test.Runner.Html exposing (run)
-import Test exposing (Test, describe, fuzz, test)
-import Expect exposing (Expectation)
-import Html.Attributes exposing (href, type_)
-import Json.Encode as Encode
 import Testable.Html.Selectors exposing (tag)
 
 
@@ -72,13 +72,13 @@ atBasePathHomepageShouldBeDisplayed =
                 initialModel =
                     init fakeLocation |> Tuple.first
             in
-                view initialModel
-                    |> Query.fromHtml
-                    |> Expect.all
-                        [ Query.has [ text "Quiz Game" ]
-                        , Query.has [ text "Play random questions" ]
-                        , Query.has [ text "Play from a category" ]
-                        ]
+            view initialModel
+                |> Query.fromHtml
+                |> Expect.all
+                    [ Query.has [ text "Quiz Game" ]
+                    , Query.has [ text "Play random questions" ]
+                    , Query.has [ text "Play from a category" ]
+                    ]
 
 
 whenGoingToCategoriesPathCategoriesShouldBeDisplayed : Test
@@ -98,12 +98,12 @@ whenGoingToCategoriesPathCategoriesShouldBeDisplayed =
                         |> Tuple.first
                         |> view
             in
-                updatedView
-                    |> Query.fromHtml
-                    |> Expect.all
-                        [ Query.has [ text "Categories are loading" ]
-                        , Query.hasNot [ text "Play from a category" ]
-                        ]
+            updatedView
+                |> Query.fromHtml
+                |> Expect.all
+                    [ Query.has [ text "Categories are loading" ]
+                    , Query.hasNot [ text "Play from a category" ]
+                    ]
 
 
 whenGoingToResultPathResultShouldBeDisplayed : Test
@@ -123,12 +123,12 @@ whenGoingToResultPathResultShouldBeDisplayed =
                         |> Tuple.first
                         |> view
             in
-                updatedView
-                    |> Query.fromHtml
-                    |> Expect.all
-                        [ Query.has [ text "Your score" ]
-                        , Query.hasNot [ text "Play from a category" ]
-                        ]
+            updatedView
+                |> Query.fromHtml
+                |> Expect.all
+                    [ Query.has [ text "Your score" ]
+                    , Query.hasNot [ text "Play from a category" ]
+                    ]
 
 
 whenGoingToResultPathResultShouldBeDisplayedWithProperScore : Test
@@ -141,16 +141,16 @@ whenGoingToResultPathResultShouldBeDisplayedWithProperScore =
                         |> Tuple.first
 
                 newLocation =
-                    { fakeLocation | hash = "#result/" ++ (toString score) }
+                    { fakeLocation | hash = "#result/" ++ toString score }
 
                 updatedView =
                     update (OnLocationChange newLocation) initialModel
                         |> Tuple.first
                         |> view
             in
-                updatedView
-                    |> Query.fromHtml
-                    |> Query.has [ (toString score) ++ " / 5" |> text ]
+            updatedView
+                |> Query.fromHtml
+                |> Query.has [ toString score ++ " / 5" |> text ]
 
 
 whenGoingToGamePathGamePageShouldBeDisplayed : Test
@@ -170,9 +170,9 @@ whenGoingToGamePathGamePageShouldBeDisplayed =
                         |> Tuple.first
                         |> view
             in
-                updatedView
-                    |> Query.fromHtml
-                    |> Query.has [ text "Loading the questions" ]
+            updatedView
+                |> Query.fromHtml
+                |> Query.has [ text "Loading the questions" ]
 
 
 whenGoingToGamePathQuestionsShouldBeFetched : Test
@@ -191,4 +191,4 @@ whenGoingToGamePathQuestionsShouldBeFetched =
                     update (OnLocationChange newLocation) initialModel
                         |> Tuple.second
             in
-                Expect.notEqual Cmd.none updatedCommand
+            Expect.notEqual Cmd.none updatedCommand

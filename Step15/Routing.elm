@@ -1,7 +1,7 @@
 module Step15.Routing exposing (parseLocation)
 
 import Navigation exposing (Location)
-import Step15.Types exposing (RemoteData(Loading), Route(..))
+import Step15.Types exposing (RemoteData(..), Route(..))
 import UrlParser exposing (..)
 
 

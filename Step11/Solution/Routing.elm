@@ -1,18 +1,18 @@
-module Step11.Solution.Routing exposing (..)
+module Step11.Solution.Routing exposing (Category, Model, Msg(..), RemoteData(..), Route(..), categoriesDecoder, displayCategoriesList, displayCategoriesPage, displayCategory, displayHomepage, displayPage, displayResultPage, displayTestsAndView, getCategoriesRequest, getCategoriesUrl, init, initialModel, main, matcher, parseLocation, update, view)
 
 import Html exposing (Html, a, button, div, h1, iframe, li, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Http
-import Result exposing (Result)
 import Json.Decode as Decode
-import UrlParser exposing (..)
 import Navigation exposing (Location)
+import Result exposing (Result)
+import UrlParser exposing (..)
 
 
 main : Program Never Model Msg
 main =
     Navigation.program OnLocationChange
-        { init = init, update = update, view = displayTestsAndView, subscriptions = (\model -> Sub.none) }
+        { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
 
 
 type Route
@@ -32,7 +32,7 @@ matcher =
 
 parseLocation : Location -> Route
 parseLocation location =
-    case (parseHash matcher location) of
+    case parseHash matcher location of
         Just route ->
             route
 
@@ -67,7 +67,7 @@ initialModel location =
         route =
             parseLocation location
     in
-        Model Loading route
+    Model Loading route
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -144,7 +144,7 @@ displayCategoriesPage categories =
 displayResultPage : Int -> Html Msg
 displayResultPage score =
     div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ (toString score) ++ " / 5") ]
+        [ h1 [] [ text ("Your score: " ++ toString score ++ " / 5") ]
         , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
         ]
 
@@ -167,11 +167,11 @@ displayCategory : Category -> Html Msg
 displayCategory category =
     let
         path =
-            "#game/category/" ++ (toString category.id)
+            "#game/category/" ++ toString category.id
     in
-        li []
-            [ a [ class "btn btn-primary", href path ] [ text category.name ]
-            ]
+    li []
+        [ a [ class "btn btn-primary", href path ] [ text category.name ]
+        ]
 
 
 displayTestsAndView : Model -> Html Msg

@@ -1,10 +1,10 @@
-module Step14.GamePage exposing (..)
+module Step14.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), answersDecoder, correctAnswerDecoder, displayAnswer, gamePage, getQuestionsRequest, init, main, questionDecoder, questionsDecoder, questionsUrl, update, view)
 
 import Html exposing (Html, a, div, h2, li, program, text, ul)
 import Html.Attributes exposing (class, src, style)
 import Http
-import Result exposing (Result)
 import Json.Decode as Decode
+import Result exposing (Result)
 
 
 questionsUrl : String
@@ -14,7 +14,7 @@ questionsUrl =
 
 main : Program Never Model Msg
 main =
-    program { init = init, update = update, view = view, subscriptions = (\model -> Sub.none) }
+    program { init = init, update = update, view = view, subscriptions = \model -> Sub.none }
 
 
 type alias Question =

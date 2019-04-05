@@ -1,4 +1,4 @@
-module Step12.GamePage exposing (..)
+module Step12.GamePage exposing (Question, gamePage, main, questionToDisplay)
 
 import Html exposing (Html, a, div, h2, iframe, li, text, ul)
 import Html.Attributes exposing (class, href, src, style)
@@ -32,5 +32,5 @@ gamePage question =
 main =
     div []
         [ div [ class "jumbotron" ] [ gamePage questionToDisplay ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
+        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
         ]

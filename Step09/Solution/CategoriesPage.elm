@@ -1,16 +1,16 @@
-module Step09.Solution.CategoriesPage exposing (..)
+module Step09.Solution.CategoriesPage exposing (Category, Model, Msg(..), RemoteData(..), displayCategories, displayView, getCategoriesCmd, init, main, testableProgram, update, view)
 
+import Result exposing (Result)
 import Testable
 import Testable.Cmd
 import Testable.Html exposing (Html, button, div, h1, iframe, program, text)
 import Testable.Html.Attributes exposing (class, src, style)
 import Testable.Http as Http
-import Result exposing (Result)
 
 
 main : Program Never Model Msg
 main =
-    testableProgram { init = init, update = update, view = displayView, subscriptions = (\model -> Sub.none) }
+    testableProgram { init = init, update = update, view = displayView, subscriptions = \model -> Sub.none }
 
 
 type alias Model =

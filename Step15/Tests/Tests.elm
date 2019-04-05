@@ -1,19 +1,19 @@
-module Step15.Tests.Tests exposing (..)
+module Step15.Tests.Tests exposing (afterAnsweringLastQuestionWeShouldBeRedirectedToProperResult, afterAnsweringLastQuestionWeShouldBeRedirectedToResult, afterClickingTheProperAnswerTheModelShouldBeUpdated, afterClickingTheWrongAnswerTheModelShouldBeUpdated, categoriesUrl, fakeGameLocation, initialModel, main, questionsUrl, randomQuestionFuzz, randomTwoQuestionsListFuzz, whenQuestionsAreLoadedTheFirstQuestionShouldBeDisplayed)
 
 import ElmEscapeHtml exposing (unescape)
+import Expect exposing (Expectation)
 import Fuzz exposing (intRange)
-import Http exposing (Error(NetworkError))
+import Http exposing (Error(..))
+import Json.Encode as Encode
 import Step15.Main exposing (init)
-import Step15.Types exposing (AnsweredQuestion, Game, Model, Msg(OnQuestionsFetched), Question, QuestionStatus(Correct, Incorrect), RemoteData(Loaded, Loading), Route(GameRoute, ResultRoute))
+import Step15.Types exposing (AnsweredQuestion, Game, Model, Msg(..), Question, QuestionStatus(..), RemoteData(..), Route(..))
 import Step15.Update exposing (update)
 import Step15.View exposing (view)
-import Test.Html.Query as Query
-import Test.Html.Selector exposing (text, tag)
-import Test.Html.Event exposing (Event, click, simulate, toResult)
-import Test.Runner.Html exposing (run)
 import Test exposing (Test, describe, fuzz, test)
-import Expect exposing (Expectation)
-import Json.Encode as Encode
+import Test.Html.Event exposing (Event, click, simulate, toResult)
+import Test.Html.Query as Query
+import Test.Html.Selector exposing (tag, text)
+import Test.Runner.Html exposing (run)
 
 
 fakeGameLocation =
@@ -69,9 +69,9 @@ whenQuestionsAreLoadedTheFirstQuestionShouldBeDisplayed =
                                 |> Tuple.first
                                 |> view
                     in
-                        updatedView
-                            |> Query.fromHtml
-                            |> Query.has [ text (unescape question1.question) ]
+                    updatedView
+                        |> Query.fromHtml
+                        |> Query.has [ text (unescape question1.question) ]
 
                 _ ->
                     Expect.pass
@@ -103,12 +103,12 @@ afterClickingTheProperAnswerTheModelShouldBeUpdated =
                         expectedGame =
                             Game [ AnsweredQuestion question1 Correct ] question2 []
                     in
-                        case modelAfterClickOnProperAnswer of
-                            Err _ ->
-                                Expect.fail "A click on an answer should generate a message to update the model"
+                    case modelAfterClickOnProperAnswer of
+                        Err _ ->
+                            Expect.fail "A click on an answer should generate a message to update the model"
 
-                            Ok model ->
-                                Expect.equal (Model Loading <| GameRoute (Loaded expectedGame)) model
+                        Ok model ->
+                            Expect.equal (Model Loading <| GameRoute (Loaded expectedGame)) model
 
                 _ ->
                     Expect.pass
@@ -140,12 +140,12 @@ afterClickingTheWrongAnswerTheModelShouldBeUpdated =
                         expectedGame =
                             Game [ AnsweredQuestion question1 Incorrect ] question2 []
                     in
-                        case modelAfterClickOnWrongAnswer of
-                            Err _ ->
-                                Expect.fail "A click on an answer should generate a message to update the model"
+                    case modelAfterClickOnWrongAnswer of
+                        Err _ ->
+                            Expect.fail "A click on an answer should generate a message to update the model"
 
-                            Ok model ->
-                                Expect.equal (Model Loading <| GameRoute (Loaded expectedGame)) model
+                        Ok model ->
+                            Expect.equal (Model Loading <| GameRoute (Loaded expectedGame)) model
 
                 _ ->
                     Expect.pass
@@ -174,17 +174,17 @@ afterAnsweringLastQuestionWeShouldBeRedirectedToResult =
                                 |> Result.map (\msg -> update msg initialModel)
                                 |> Result.map Tuple.first
                     in
-                        case modelAfterClickOnAnswer of
-                            Err _ ->
-                                Expect.fail "A click on an answer should generate a message to update the model"
+                    case modelAfterClickOnAnswer of
+                        Err _ ->
+                            Expect.fail "A click on an answer should generate a message to update the model"
 
-                            Ok { route } ->
-                                case route of
-                                    ResultRoute _ ->
-                                        Expect.pass
+                        Ok { route } ->
+                            case route of
+                                ResultRoute _ ->
+                                    Expect.pass
 
-                                    _ ->
-                                        Expect.fail "The user should be redirected to the score page"
+                                _ ->
+                                    Expect.fail "The user should be redirected to the score page"
 
                 _ ->
                     Expect.pass
@@ -213,17 +213,17 @@ afterAnsweringLastQuestionWeShouldBeRedirectedToProperResult =
                                 |> Result.map (\msg -> update msg initialModel)
                                 |> Result.map Tuple.first
                     in
-                        case modelAfterClickOnWrongAnswer of
-                            Err _ ->
-                                Expect.fail "A click on an answer should generate a message to update the model"
+                    case modelAfterClickOnWrongAnswer of
+                        Err _ ->
+                            Expect.fail "A click on an answer should generate a message to update the model"
 
-                            Ok { route } ->
-                                case route of
-                                    ResultRoute 1 ->
-                                        Expect.pass
+                        Ok { route } ->
+                            case route of
+                                ResultRoute 1 ->
+                                    Expect.pass
 
-                                    _ ->
-                                        Expect.fail "The user should be redirected to the score page with score 1"
+                                _ ->
+                                    Expect.fail "The user should be redirected to the score page with score 1"
 
                 _ ->
                     Expect.pass
@@ -232,7 +232,7 @@ afterAnsweringLastQuestionWeShouldBeRedirectedToProperResult =
 randomTwoQuestionsListFuzz : Fuzz.Fuzzer (List Question)
 randomTwoQuestionsListFuzz =
     Fuzz.map2
-        (List.singleton >> flip (::))
+        (List.singleton >> (\b a -> (::) a b))
         randomQuestionFuzz
         randomQuestionFuzz
 

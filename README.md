@@ -1,4 +1,4 @@
-# Set up
+# Welcome!
 
 Today, we will try to learn Elm together. Before starting to develop in Elm, we need to follow some instructions to have a working dev environment.
 
@@ -42,7 +42,7 @@ cd elm-workshop
 This workshop is divided into several folders corresponding to one step each. To start, first execute the following commands into your terminal at the root of this repository:
 
 ```sh
-elm-package install && elm-reactor
+elm make && elm reactor
 ```
 
 You can then open the link [http://localhost:8000/](http://localhost:8000/). As you can see, `elm-reactor` allowed us to launch a basic dev environment, and you can see the different folders for each step of the project. You can now start by going into the step 1.

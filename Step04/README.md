@@ -1,50 +1,38 @@
-# Étape 4 : Allons plus loin avec la page de résultat
+# Step4: Categories List
 
-## Objectif
+## Goal
 
-Cette page de résultat est un peu trop statique, ce serait bien d'avoir un commentaire dépendant du score ! 
+This new page should list the available categories of questions. It will be done with several steps as there are many new concepts to apprehend.
 
-<img alt="Screenshot of the page to realize" src="../images/step4.png" style="width: 100%; border: 1px solid black;">
-
-Voici la structure que vous devez réaliser en HTML :
-
-```html
-<div class="score">
-    <h1>Your score: 3 / 5</h1>
-    <p>Keep going, I'm sure you can do better!</p>
-    <a class="btn btn-primary" href="#">Replay</a>
-</div>
-```
-
-Pour cela, ouvrez le fichier `./ResultPage.elm` et ajoutez ce qu'il manque ! On veut deux commentaires différents :
-
- - Si le score est compris entre 0 et 3, afficher "Keep going, I'm sure you can do better!"
- - Sinon, afficher "Congrats, this is really good!"
-
-
-## Un bloc `let...in` pour déclarer des variables
-
-En ouvrant le fichier, vous allez voir une nouveauté, un bloc `let...in`. Celui-ci vous permet de déclarer des variables dans le bloc `let` pour les utiliser ensuite dans le bloc `in`:
+This time, by going to `CategoriesPage.elm`, you will see that the page has a compilation error! Indeed, the list of categories is declared in the code in the following manner:
 
 ```elm
-import Html exposing (text)
-
-displayResult userAnswer correctAnswer =
-    let
-        message = 
-            if userAnswer == correctAnswer then 
-                "Correct!" 
-            else 
-                "Wrong!"
-    in 
-        text message
+categories : List Category
+categories =
+    [ 
+    -- list of categories
+    ]
 ```
 
-En général, cela permet d'avoir un code plus lisible.
+By looking at the type annotation, we can see that it's a list of elements, which are of type `Category`... but this type doesn't exist! This will be your mission for this step: make the code compile by creating the `Category` type.
 
+It should contains two fields:
+
+ - `id` of type `Int`
+ - `name` of type `String`
+ 
+
+## Wait... How can we create a type?
+
+If you don't remember how to create a new type, here are two links to the documentation. 
+Be careful, there are two ways to declare a type which are not equivalent, choose wisely!
+
+ - [Union Types](https://guide.elm-lang.org/types/union_types.html)
+ - [Type Aliases](https://guide.elm-lang.org/types/type_aliases.html)
+  
 
 ## Let's start!
-[Lien vers le rendu](./index.html) (pensez à actualiser pour voir vos changements)
 
+[See the result of your code](./CategoriesPage.elm) (don't forget to refresh to see changes)
 
-<div style="text-align: right;"><a href="../Step05">Étape suivante --&gt;</a></div>
+Once the page compiles, you can go to the [next step](../Step05).

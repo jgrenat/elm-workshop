@@ -1,17 +1,17 @@
-module Step13.Tests.Tests exposing (..)
+module Step13.Tests.Tests exposing (expectedRequest, gamePageComponent, main, questionEncoder, questionsListEncoder, questionsUrl, randomQuestionsFuzz, theInitMethodRequestShouldBeAGETRequestToProperUrl, theInitMethodShouldFetchQuestions, theInitModelShouldBeLoading, whenInitRequestCompletesTheModelShouldBeUpdated, whenInitRequestCompletesTheResultShouldBeDisplayed, whenInitRequestFailTheCategoriesShouldBeOnError, whenInitRequestFailThereShouldBeAnError, whenTheCategoriesAreLoadingAMessageShouldSaySo)
 
-import Fuzz
-import Http exposing (Error(NetworkError))
-import Step13.GamePage as GamePage exposing (Game, Model, Msg(..), Question, RemoteData(..))
-import Test.Runner.Html exposing (run)
-import Test exposing (Test, describe, fuzz, test)
 import Expect
+import Fuzz
 import Html.Attributes exposing (href)
-import Testable.Cmd
-import Testable
-import Testable.TestContext exposing (..)
-import Testable.Http exposing (ok, serverError)
+import Http exposing (Error(..))
 import Json.Encode as Encode
+import Step13.GamePage as GamePage exposing (Game, Model, Msg(..), Question, RemoteData(..))
+import Test exposing (Test, describe, fuzz, test)
+import Test.Runner.Html exposing (run)
+import Testable
+import Testable.Cmd
+import Testable.Http exposing (ok, serverError)
+import Testable.TestContext exposing (..)
 
 
 questionsUrl : String
@@ -67,7 +67,7 @@ theInitMethodRequestShouldBeAGETRequestToProperUrl =
 
 whenTheCategoriesAreLoadingAMessageShouldSaySo : Test
 whenTheCategoriesAreLoadingAMessageShouldSaySo =
-    test ("When the request is loading, the following message should be displayed: \"Loading the questions...\"") <|
+    test "When the request is loading, the following message should be displayed: \"Loading the questions...\"" <|
         \() ->
             gamePageComponent
                 |> startForTest
@@ -76,7 +76,7 @@ whenTheCategoriesAreLoadingAMessageShouldSaySo =
 
 whenInitRequestFailTheCategoriesShouldBeOnError : Test
 whenInitRequestFailTheCategoriesShouldBeOnError =
-    test ("When the request fails, the model should keep track of that") <|
+    test "When the request fails, the model should keep track of that" <|
         \() ->
             gamePageComponent
                 |> startForTest
@@ -86,7 +86,7 @@ whenInitRequestFailTheCategoriesShouldBeOnError =
 
 whenInitRequestFailThereShouldBeAnError : Test
 whenInitRequestFailThereShouldBeAnError =
-    test ("When the request fails, the following error message should be displayed: \"An unknown error occurred while loading the questions\"") <|
+    test "When the request fails, the following error message should be displayed: \"An unknown error occurred while loading the questions\"" <|
         \() ->
             gamePageComponent
                 |> startForTest
@@ -110,29 +110,29 @@ whenInitRequestCompletesTheModelShouldBeUpdated =
                         questionsJson =
                             Encode.encode 0 (questionsListEncoder randomQuestions)
                     in
-                        gamePageComponent
-                            |> startForTest
-                            |> resolveHttpRequest expectedRequest (ok questionsJson)
-                            |> assertCurrentModel expectedModel
+                    gamePageComponent
+                        |> startForTest
+                        |> resolveHttpRequest expectedRequest (ok questionsJson)
+                        |> assertCurrentModel expectedModel
 
 
 whenInitRequestCompletesTheResultShouldBeDisplayed : Test
 whenInitRequestCompletesTheResultShouldBeDisplayed =
-    fuzz randomQuestionsFuzz ("When the request completes, the first question should be displayed") <|
+    fuzz randomQuestionsFuzz "When the request completes, the first question should be displayed" <|
         \randomQuestions ->
             let
                 questionsJson =
                     Encode.encode 0 (questionsListEncoder randomQuestions)
             in
-                case randomQuestions of
-                    [] ->
-                        Expect.pass
+            case randomQuestions of
+                [] ->
+                    Expect.pass
 
-                    firstQuestion :: _ ->
-                        gamePageComponent
-                            |> startForTest
-                            |> resolveHttpRequest expectedRequest (ok questionsJson)
-                            |> assertText (String.contains firstQuestion.question >> Expect.true "The first question is not displayed")
+                firstQuestion :: _ ->
+                    gamePageComponent
+                        |> startForTest
+                        |> resolveHttpRequest expectedRequest (ok questionsJson)
+                        |> assertText (String.contains firstQuestion.question >> Expect.true "The first question is not displayed")
 
 
 randomQuestionsFuzz : Fuzz.Fuzzer (List Question)
@@ -154,7 +154,7 @@ questionsListEncoder categories =
     categories
         |> List.map questionEncoder
         |> Encode.list
-        |> \questions -> Encode.object [ ( "results", questions ) ]
+        |> (\questions -> Encode.object [ ( "results", questions ) ])
 
 
 questionEncoder : Question -> Encode.Value
@@ -165,11 +165,11 @@ questionEncoder question =
                 |> List.drop 1
                 |> List.map Encode.string
     in
-        Encode.object
-            [ ( "question", Encode.string question.question )
-            , ( "correct_answer", Encode.string question.correctAnswer )
-            , ( "incorrect_answers", Encode.list incorrectAnswers )
-            , ( "categories", Encode.string "Science & Nature" )
-            , ( "type", Encode.string "multiple" )
-            , ( "difficulty", Encode.string "medium" )
-            ]
+    Encode.object
+        [ ( "question", Encode.string question.question )
+        , ( "correct_answer", Encode.string question.correctAnswer )
+        , ( "incorrect_answers", Encode.list incorrectAnswers )
+        , ( "categories", Encode.string "Science & Nature" )
+        , ( "type", Encode.string "multiple" )
+        , ( "difficulty", Encode.string "medium" )
+        ]
