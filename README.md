@@ -14,7 +14,7 @@ Install a plugin for your editor to be able to understand Elm. You can find some
  - [Atom](https://atom.io/packages/language-elm)
  - [Brackets](https://github.com/lepinay/elm-brackets)
  - [Emacs](https://github.com/jcollard/elm-mode)
- - [Webstorm / IntelliJ](https://github.com/durkiewicz/elm-plugin)
+ - [Webstorm / IntelliJ](https://github.com/klazuka/intellij-elm)
  - [Light Table](https://github.com/rundis/elm-light)
  - [Sublime Text](https://packagecontrol.io/packages/Elm%20Language%20Support)
  - [Vim](https://github.com/ElmCast/elm-vim)
