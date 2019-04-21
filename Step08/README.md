@@ -1,59 +1,61 @@
-# Étape 8 : The Architecture Elm (suite)
+# Step 9: Categories List (part 2)
 
-## Objectif
+## Goal
 
-Nous avons pu voir l'architecture Elm dans la précédente étape. Comme vous avez pu le voir, on déclare notre programme de la façon suivante :
+A lot of theory during the last 2 steps, it's time to come back to the categories page. But that was necessary, because we will now load our categories using a HTTP request... aka an *effect*! 
+
+You'ure now ready for that!
+
+In the `CategoriesPage.elm` file, you can see that now, our categories page follow the Elm Architecture. Moreover, the categories list is not hardwritten in the code anymore, and does not appear!
+
+Your goal will now be to fetch this list through the [Trivia API](https://opentdb.com/api_config.php). The only thing you'll need to do is a GET request to [https://opentdb.com/api_category.php](https://opentdb.com/api_category.php).
+
+Our model is composed of a record with a key `categories` containing something of type `RemoteData String`. This is a custom type that we've defined above in the code, that allow us to represent our result by stating if our categories are loading, if we've had an error doing so, or if they are loaded successfully (in which case it does contain the result). Here, we're only trying to get a `String` and not a `List Category`. This is because converting the result into a `List Category` is harder, we will do that in the next step.
+
+
+## Instructions 
+
+ - When the page load, you need to trigger an HTTP call to get the categories list
+ - This request will fetch the categories and get back a string representing the categories list as a JSON document
+ - During the request, the screen should display the message "*Loading the categories...*"
+ - If an error occurs, the screen should display the message "*An error occurred while loading the categories*"
+ - When the categories are received, the screen should display the result as a string
+ 
+ 
+## How do I perform HTTP requests?
+ 
+As for random numbers, HTTP requests are an effect that need to be asked with a command. For that, you will use the package `elm/http` already installed on the project.
+
+You will use the function [Http.get](https://package.elm-lang.org/packages/elm/http/latest/Http#get) that takes as argument a record containing two elements:
+ - the URL to call
+ - what the request should expect as a result
+ 
+As we're expecting a string, for the second element you can use [Http.expectString](https://package.elm-lang.org/packages/elm/http/latest/Http#expectString) that needs as argument a function of type `Result Error String -> Msg`. That's a function that receives a `Result Error String` and returns a message. 
+
+Lucky us, that's exactly the signature of our message constructor `OnCategoriesFetched`!
+
+Small tip: The `Result error value` type is defined in the `Result` module like this:
 
 ```elm
-main =
-    beginnerProgram { model = initialModel, view = view, update = update }
+type Result error value
+    = Ok value
+    | Err error
 ```
 
-Cette fonction `beginnerProgram` est en réalité une version simplifiée de la fonction `program`, qui est vraiment utilisée pour développer des applications web plus complexes.
-
-Il y a deux différences principales : 
-
- - On peut communiquer avec du code JavaScript 
- à travers les subscriptions `Sub` et les commandes `Cmd` 
- - On peut provoquer des *effets* à travers les `Cmd`
- 
-Le second point mérite quelques explications. En Elm, il est impossible de provoquer ce qu'on appelle des *effets* dans son code. 
- 
-En effet, toutes les fonctions sont pures, cela signifie que le retour d'une fonction ne dépend *que* de ses paramètres et qu'elle ne modifie rien à l'extérieur de cette fonction. Cela permet d'avoir une sécurité 
- 
-Dans ces conditions, on ne peut pas générer nous-même des nombres aléatoires, puisque deux appels à la même fonction génèreraient des nombres différents ! Il en va de même pour ce qui est de stocker des données dans le `localStorage`, ou même exécuter des requêtes HTTP !
- 
-C'est là que les commandes (`Cmd` dans Elm) interviennent ! Celles-ci nous permettent de dire au Elm runtime : "Je souhaite provoquer un effet, voici ce que tu dois faire et le message dans lequel me retourner le résultat". 
- 
-C'est ainsi le Elm runtime qui va se charger d'exécuter ces effets et nous rappeler avec le résultat.
-
-
-## Un exemple avec un Random Number
-
-Je vous invite à ouvrir le fichier *RandomNumber.elm*, autant dans le navigateur Elm-reactor que dans votre IDE. J'ai annoté le code avec des numéros pour pouvoir commenter plus facilement.
-
-On voit qu'on déclare un programme en `(1)` avec un quatrième élément, qui correspond aux *Subscriptions* `(2)`. C'est par là qu'on passerait si on souhaitait recevoir des messages d'un code JavaScript. En l'occurence, ce n'est pas le cas, donc on retourne simplement `Sub.none` pour l'indiquer.
-
-On voit ensuite en `(3)` que nos fonctions d'*init* et d'*update* ont des signatures différentes, puisqu'au lieu de renvoyer un `Model`, elles renvoient un tuple `( Model, Cmd Msg )`. C'est en effet par là qu'on va pouvoir envoyer des effets au Elm runtime pour qu'il les exécute.
-
-Dans le cas du model initial, on n'a pas besoin de provoquer d'effet, donc on retourne `Cmd.none`. Notez au passage qu'on utilise notre type Model comme une fonction pour créer notre modèle (`Model 0`).
-
-Notre fonction *view* est assez classique, mais on peut remarquer qu'un clic sur le bouton en `(4)` va envoyer un message pour demander la génération d'un nombre aléatoire.
-
-Ce message passe dans notre fonction d'update en `(5)` où on ne modifie pas le model (puisqu'on le retourne tel quel), mais par contre on retourne une commande :
-
-```elm
-Random.generate OnNumberGenerated (Random.int 0 10)
-```
-
-`Random.generate` retourne une commande qui indique au Elm runtime qu'on souhaite générer une valeur aléatoire. Le second argument, `Random.int 0 10` indique que cette valeur est un entier entre 0 et 10, et le premier argument `OnNumberGenerated` est le message via lequel cette valeur doit nous être envoyée.
-
-On attend d'ailleurs en `(6)` cette fameuse valeur pour la stocker dans notre modèle actuel. Plus besoin d'effet, donc on retourne `Cmd.none` avec.
+It should be enough for you to extract data from it in a `case...of` expression, but you can find more information [there](https://package.elm-lang.org/packages/elm/core/latest/Result).
 
 
 ## Let's start!
 
-Heu... en fait non ! Cette étape n'était que de la théorie. Mais qu'à cela ne tienne, on va enfin pouvoir repasser à la pratique sur les catégories !
+[See the result of your code](./CategoriesPage.elm) (don't forget to refresh to see changes)
+
+Once the tests are passing, you can go to the [next step](../Step09).
 
 
-<div style="text-align: right;"><a href="../Step09">Étape suivante --&gt;</a></div>
+
+
+
+
+
+
+

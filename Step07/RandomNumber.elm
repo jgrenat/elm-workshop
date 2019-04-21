@@ -4,13 +4,14 @@ import Browser
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
 import Random
+import Utils.Utils exposing (styles)
 
 
 {-| (1)
 -}
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Browser.document
+    Browser.element
         { init = \() -> init
         , update = update
         , view = view
@@ -55,5 +56,6 @@ view model =
         -- (4)
         [ button [ onClick GenerateNumber ] [ text "Generate random number" ]
         , div []
-            [ text ("The random number : " ++ toString model.randomNumber) ]
+            [ text ("The random number : " ++ String.fromInt model.randomNumber) ]
+        , styles
         ]

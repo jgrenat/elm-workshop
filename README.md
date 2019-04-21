@@ -12,7 +12,7 @@ You need to download and install Elm through [the following link](https://guide.
 Install a plugin for your editor to be able to understand Elm. You can find some instructions for these editors: 
 
  - [Atom](https://atom.io/packages/language-elm)
- - [Brackets](https://github.com/lepinay/elm-brackets)
+ - [Brackets](https://github.com/tommot348/elm-brackets)
  - [Emacs](https://github.com/jcollard/elm-mode)
  - [Webstorm / IntelliJ](https://github.com/klazuka/intellij-elm)
  - [Light Table](https://github.com/rundis/elm-light)
