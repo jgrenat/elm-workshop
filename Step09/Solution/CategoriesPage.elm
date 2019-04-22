@@ -1,25 +1,25 @@
-module Step09.Solution.CategoriesPage exposing (Category, Model, Msg(..), RemoteData(..), displayCategories, displayView, getCategoriesCmd, init, main, testableProgram, update, view)
+module Step09.Solution.CategoriesPage exposing (Category, Model, Msg(..), RemoteData(..), categoriesListDecoder, displayCategories, displayCategory, getCategoriesDecoder, getCategoriesRequest, init, main, update, view)
 
+import Browser
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Http exposing (expectJson)
+import Json.Decode as Decode
 import Result exposing (Result)
-import Testable
-import Testable.Cmd
-import Testable.Html exposing (Html, button, div, h1, iframe, program, text)
-import Testable.Html.Attributes exposing (class, src, style)
-import Testable.Http as Http
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    testableProgram { init = init, update = update, view = displayView, subscriptions = \model -> Sub.none }
+    Browser.element { init = \_ -> init, update = update, view = view, subscriptions = \model -> Sub.none }
 
 
 type alias Model =
-    { categories : RemoteData String
+    { categories : RemoteData (List Category)
     }
 
 
 type Msg
-    = OnCategoriesFetched (Result Http.Error String)
+    = OnCategoriesFetched (Result Http.Error (List Category))
 
 
 type alias Category =
@@ -34,70 +34,73 @@ type RemoteData a
     | OnError
 
 
-init : ( Model, Testable.Cmd.Cmd Msg )
+init : ( Model, Cmd.Cmd Msg )
 init =
-    ( Model Loading, getCategoriesCmd )
+    ( Model Loading, getCategoriesRequest )
 
 
-getCategoriesCmd : Testable.Cmd.Cmd Msg
-getCategoriesCmd =
-    Http.send OnCategoriesFetched (Http.getString "https://opentdb.com/api_category.php")
+getCategoriesRequest : Cmd Msg
+getCategoriesRequest =
+    Http.get
+        { url = "https://opentdb.com/api_category.php"
+        , expect = expectJson OnCategoriesFetched getCategoriesDecoder
+        }
 
 
-update : Msg -> Model -> ( Model, Testable.Cmd.Cmd Msg )
+getCategoriesDecoder : Decode.Decoder (List Category)
+getCategoriesDecoder =
+    Decode.field "trivia_categories" categoriesListDecoder
+
+
+categoriesListDecoder : Decode.Decoder (List Category)
+categoriesListDecoder =
+    Decode.list categoryDecoder
+
+
+categoryDecoder : Decode.Decoder Category
+categoryDecoder =
+    Decode.map2 Category
+        (Decode.field "id" Decode.int)
+        (Decode.field "name" Decode.string)
+
+
+update : Msg -> Model -> ( Model, Cmd.Cmd Msg )
 update msg model =
     case msg of
-        OnCategoriesFetched (Ok categoriesString) ->
-            ( { model | categories = Loaded categoriesString }, Testable.Cmd.none )
-
         OnCategoriesFetched (Err _) ->
-            ( Model OnError, Testable.Cmd.none )
+            ( Model OnError, Cmd.none )
+
+        OnCategoriesFetched (Ok categories) ->
+            ( Model (Loaded categories), Cmd.none )
 
 
-view : Model -> Testable.Html.Html Msg
+view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Play within a given category" ]
-        , displayCategories model.categories
+        , case model.categories of
+            Loading ->
+                text "Loading the categories..."
+
+            OnError ->
+                text "An error occurred while loading the categories"
+
+            Loaded categories ->
+                displayCategories categories
         ]
 
 
-displayCategories : RemoteData String -> Html Msg
-displayCategories remoteString =
-    case remoteString of
-        Loading ->
-            text "Loading the categories..."
-
-        OnError ->
-            text "An error occurred while loading the categories."
-
-        Loaded categories ->
-            text categories
+displayCategories : List Category -> Html msg
+displayCategories categories =
+    ul [ class "categories" ] (List.map displayCategory categories)
 
 
-
-------------------------------------------------------------------------------------------------------
--- Don't modify the code below, it displays the view and the tests and helps with testing your code --
-------------------------------------------------------------------------------------------------------
-
-
-displayView : Model -> Testable.Html.Html Msg
-displayView model =
-    div []
-        [ div [ class "jumbotron" ] [ view model ] ]
-
-
-testableProgram :
-    { init : ( model, Testable.Cmd.Cmd msg )
-    , update : msg -> model -> ( model, Testable.Cmd.Cmd msg )
-    , subscriptions : model -> Sub msg
-    , view : model -> Html msg
-    }
-    -> Program Never model msg
-testableProgram options =
-    program
-        { init = Testable.init options.init
-        , view = Testable.view options.view
-        , update = Testable.update options.update
-        , subscriptions = options.subscriptions
-        }
+displayCategory : Category -> Html.Html msg
+displayCategory category =
+    let
+        link =
+            "#game/category/" ++ String.fromInt category.id
+    in
+    li []
+        [ a [ class "btn btn-primary", href link ] [ text category.name ]
+        ]

@@ -78,7 +78,7 @@ Before setting up this architecture on the categories page, let's try it with a 
 
 ![Page to realize](../Utils/images/step7-tea.png)
 
-A working example [can be found](https://underage-or-adult.surge.sh/).
+A working example [can be found there](https://underage-or-adult.surge.sh/).
 
 
 ### Model 

@@ -1,16 +1,17 @@
-module Step09.Tests.Tests exposing (categoriesPageComponent, categoriesUrl, suite, theInitMethodRequestShouldBeAGETRequestToProperUrl, theInitMethodShouldFetchCategories, theInitModelShouldBeLoading, whenInitRequestCompletesTheModelShouldBeUpdated, whenInitRequestCompletesTheResultShouldBeDisplayed, whenInitRequestFailTheCategoriesShouldBeOnError, whenInitRequestFailThereShouldBeAnError, whenTheCategoriesAreLoadingAMessageShouldSaySo)
+module Step09.Tests.Tests exposing (main)
 
-import Expect
+import Expect exposing (Expectation)
 import Fuzz
-import Html.Attributes exposing (href)
+import Html exposing (Html)
 import Http exposing (Error(..))
-import Step09.CategoriesPage as CategoriesPage exposing (Model, Msg(..), RemoteData(..))
-import Test exposing (Test, describe, fuzz, test)
-import Test.Runner.Html exposing (run)
-import Testable
-import Testable.Cmd
-import Testable.Http
-import Testable.TestContext exposing (..)
+import Json.Decode as Decode
+import Json.Encode as Encode
+import Random
+import Step09.CategoriesPage as CategoriesPage exposing (Category, Model, Msg(..), RemoteData(..), getCategoriesDecoder)
+import Test exposing (Test, concat, fuzz, test)
+import Test.Html.Selector as Selector exposing (Selector)
+import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
+import TestContext exposing (SimulatedEffect(..), TestContext, createWithSimulatedEffects, expectModel, expectViewHas, simulateLastEffect, update)
 
 
 categoriesUrl : String
@@ -18,31 +19,40 @@ categoriesUrl =
     "https://opentdb.com/api_category.php"
 
 
-categoriesPageComponent : Component Msg Model
-categoriesPageComponent =
-    Component CategoriesPage.init CategoriesPage.update CategoriesPage.view
+categoriesPageProgram : TestContext Msg Model (Cmd Msg)
+categoriesPageProgram =
+    createWithSimulatedEffects
+        { init = CategoriesPage.init
+        , update = CategoriesPage.update
+        , view = CategoriesPage.view
+        , deconstructEffect = \_ -> [ HttpRequest { method = "get", url = categoriesUrl } ]
+        }
+
+
+main : Html a
+main =
+    viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
 
 
 suite : Test
 suite =
-    describe "What we expect:"
+    concat
         [ theInitMethodShouldFetchCategories
         , theInitModelShouldBeLoading
-        , theInitMethodRequestShouldBeAGETRequestToProperUrl
         , whenTheCategoriesAreLoadingAMessageShouldSaySo
         , whenInitRequestFailTheCategoriesShouldBeOnError
         , whenInitRequestFailThereShouldBeAnError
+        , theDecoderShouldProperlyDecodeCategoriesList
         , whenInitRequestCompletesTheModelShouldBeUpdated
-        , whenInitRequestCompletesTheResultShouldBeDisplayed
+        , whenInitRequestCompletesTheResultsShouldBeDisplayed
         ]
-        |> run
 
 
 theInitMethodShouldFetchCategories : Test
 theInitMethodShouldFetchCategories =
     test "The init method should return a `Cmd` (ideally to fetch categories, but this is not covered by this test)." <|
         \() ->
-            Expect.notEqual Testable.Cmd.none (Tuple.second CategoriesPage.init)
+            Expect.false "The init method should return a command" (Tuple.second CategoriesPage.init == Cmd.none)
 
 
 theInitModelShouldBeLoading : Test
@@ -52,22 +62,12 @@ theInitModelShouldBeLoading =
             Expect.equal (Model Loading) (Tuple.first CategoriesPage.init)
 
 
-theInitMethodRequestShouldBeAGETRequestToProperUrl : Test
-theInitMethodRequestShouldBeAGETRequestToProperUrl =
-    test ("The request should be a GET request to the url \"" ++ categoriesUrl ++ "\"") <|
-        \() ->
-            categoriesPageComponent
-                |> startForTest
-                |> assertHttpRequest (Testable.Http.getRequest categoriesUrl)
-
-
 whenTheCategoriesAreLoadingAMessageShouldSaySo : Test
 whenTheCategoriesAreLoadingAMessageShouldSaySo =
     test "When the request is loading, the following message should be displayed: \"Loading the categories...\"" <|
         \() ->
-            categoriesPageComponent
-                |> startForTest
-                |> assertText (String.contains "Loading the categories..." >> Expect.true "The message is not displayed")
+            categoriesPageProgram
+                |> expectViewHas [ Selector.containing [ Selector.text "Loading the categories..." ] ]
 
 
 whenInitRequestFailTheCategoriesShouldBeOnError : Test
@@ -78,35 +78,82 @@ whenInitRequestFailTheCategoriesShouldBeOnError =
                 model =
                     CategoriesPage.update (OnCategoriesFetched (Err NetworkError)) (Model Loading)
             in
-            Expect.equal ( Model OnError, Testable.Cmd.none ) model
+            Expect.equal ( Model OnError, Cmd.none ) model
 
 
 whenInitRequestFailThereShouldBeAnError : Test
 whenInitRequestFailThereShouldBeAnError =
     test "When the request fails, the following error message should be displayed: \"An error occurred while loading the categories\"" <|
         \() ->
-            categoriesPageComponent
-                |> startForTest
+            categoriesPageProgram
                 |> update (OnCategoriesFetched (Err NetworkError))
-                |> assertText (String.contains "An error occurred while loading the categories" >> Expect.true "The message is not displayed")
+                |> expectViewHas [ Selector.containing [ Selector.text "An error occurred while loading the categories" ] ]
+
+
+theDecoderShouldProperlyDecodeCategoriesList : Test
+theDecoderShouldProperlyDecodeCategoriesList =
+    fuzz randomCategoriesFuzz "The decoder should properly decode the categories list" <|
+        \randomCategories ->
+            let
+                encodedCategories =
+                    encodeCategoriesList randomCategories
+            in
+            Decode.decodeValue getCategoriesDecoder encodedCategories
+                |> Expect.equal (Ok randomCategories)
 
 
 whenInitRequestCompletesTheModelShouldBeUpdated : Test
 whenInitRequestCompletesTheModelShouldBeUpdated =
-    fuzz Fuzz.string "When the request completes, the model should store the string returned and there should be no command sent" <|
-        \randomResponse ->
+    fuzz randomCategoriesFuzz "When the request completes, the model should store the decoded categories" <|
+        \randomCategories ->
             let
-                model =
-                    CategoriesPage.update (OnCategoriesFetched (Ok randomResponse)) (Model Loading)
+                expectedModel =
+                    Model (Loaded randomCategories)
             in
-            Expect.equal ( Model (Loaded randomResponse), Testable.Cmd.none ) model
+            categoriesPageProgram
+                |> simulateLastEffect (\_ -> randomCategories |> Ok |> OnCategoriesFetched |> List.singleton |> Ok)
+                |> expectModel (Expect.equal expectedModel)
 
 
-whenInitRequestCompletesTheResultShouldBeDisplayed : Test
-whenInitRequestCompletesTheResultShouldBeDisplayed =
-    fuzz Fuzz.string "When the request completes, the resulting string should be displayed" <|
-        \randomResponse ->
-            categoriesPageComponent
-                |> startForTest
-                |> update (OnCategoriesFetched (Ok randomResponse))
-                |> assertText (String.contains randomResponse >> Expect.true "The result of the request is not displayed")
+whenInitRequestCompletesTheResultsShouldBeDisplayed : Test
+whenInitRequestCompletesTheResultsShouldBeDisplayed =
+    fuzz randomCategoriesFuzz "When the request completes, the categories should be displayed" <|
+        \randomCategories ->
+            let
+                allCategoriesNamesArePresent : List Selector
+                allCategoriesNamesArePresent =
+                    randomCategories
+                        |> List.map .name
+                        |> List.map Selector.text
+                        |> List.map List.singleton
+                        |> List.map Selector.containing
+                        |> Debug.log "test"
+            in
+            case randomCategories of
+                -- Not asserting empty array because findAll makes it fail
+                [] ->
+                    Expect.pass
+
+                _ ->
+                    categoriesPageProgram
+                        |> simulateLastEffect (\_ -> randomCategories |> Ok |> OnCategoriesFetched |> List.singleton |> Ok)
+                        |> expectViewHas allCategoriesNamesArePresent
+
+
+randomCategoriesFuzz : Fuzz.Fuzzer (List Category)
+randomCategoriesFuzz =
+    Fuzz.map2 Category Fuzz.int Fuzz.string
+        |> Fuzz.list
+
+
+encodeCategoriesList : List Category -> Encode.Value
+encodeCategoriesList categories =
+    categories
+        |> Encode.list
+            (\category ->
+                Encode.object
+                    [ ( "id", Encode.int category.id )
+                    , ( "name", Encode.string category.name )
+                    ]
+            )
+        |> (\encodedCategories -> Encode.object [ ( "trivia_categories", encodedCategories ) ])
