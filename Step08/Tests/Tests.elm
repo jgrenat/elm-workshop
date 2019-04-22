@@ -9,7 +9,7 @@ import Step08.CategoriesPage as CategoriesPage exposing (Model, Msg(..), RemoteD
 import Test exposing (Test, concat, fuzz, test)
 import Test.Html.Selector as Selector
 import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
-import TestContext exposing (SimulatedEffect(..), assertHttpRequest, createWithSimulatedEffects, expectViewHas, update)
+import TestContext exposing (SimulatedEffect(..), TestContext, createWithSimulatedEffects, expectViewHas, update)
 
 
 categoriesUrl : String
@@ -17,21 +17,19 @@ categoriesUrl =
     "https://opentdb.com/api_category.php"
 
 
+categoriesPageProgram : TestContext Msg Model (Cmd Msg)
 categoriesPageProgram =
     createWithSimulatedEffects
         { init = CategoriesPage.init
         , update = CategoriesPage.update
         , view = CategoriesPage.view
-        , deconstructEffect =
-            \cmd ->
-                [ HttpRequest { method = "get", url = categoriesUrl }
-                ]
+        , deconstructEffect = \_ -> [ HttpRequest { method = "get", url = categoriesUrl } ]
         }
 
 
 main : Html a
 main =
-    viewResults (Debug.log "" (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests)) suite
+    viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
 
 
 suite : Test
@@ -39,7 +37,6 @@ suite =
     concat
         [ theInitMethodShouldFetchCategories
         , theInitModelShouldBeLoading
-        , theInitMethodRequestShouldBeAGETRequestToProperUrl
         , whenTheCategoriesAreLoadingAMessageShouldSaySo
         , whenInitRequestFailTheCategoriesShouldBeOnError
         , whenInitRequestFailThereShouldBeAnError
@@ -52,7 +49,7 @@ theInitMethodShouldFetchCategories : Test
 theInitMethodShouldFetchCategories =
     test "The init method should return a `Cmd` (ideally to fetch categories, but this is not covered by this test)." <|
         \() ->
-            Expect.notEqual Cmd.none (Tuple.second CategoriesPage.init)
+            Expect.false "The init method should return a Cmd" (Tuple.second CategoriesPage.init == Cmd.none)
 
 
 theInitModelShouldBeLoading : Test
@@ -60,14 +57,6 @@ theInitModelShouldBeLoading =
     test "The init model should indicates that the categories are loading" <|
         \() ->
             Expect.equal (Model Loading) (Tuple.first CategoriesPage.init)
-
-
-theInitMethodRequestShouldBeAGETRequestToProperUrl : Test
-theInitMethodRequestShouldBeAGETRequestToProperUrl =
-    test ("The request should be a GET request to the url \"" ++ categoriesUrl ++ "\"") <|
-        \() ->
-            categoriesPageProgram
-                |> assertHttpRequest { method = "get", url = categoriesUrl }
 
 
 whenTheCategoriesAreLoadingAMessageShouldSaySo : Test

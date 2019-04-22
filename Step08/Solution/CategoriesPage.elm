@@ -1,4 +1,4 @@
-module Step08.CategoriesPage exposing (Model, Msg(..), RemoteData(..), init, main, update, view)
+module Step08.Solution.CategoriesPage exposing (Model, Msg(..), RemoteData(..), init, main, update, view)
 
 import Browser
 import Html exposing (Html, div, h1, text)
