@@ -64,7 +64,7 @@ categoryDecoder =
         (Decode.field "name" Decode.string)
 
 
-update : Msg -> Model -> ( Model, Cmd.Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnCategoriesFetched (Err _) ->
@@ -95,7 +95,7 @@ displayCategories categories =
     ul [ class "categories" ] (List.map displayCategory categories)
 
 
-displayCategory : Category -> Html.Html msg
+displayCategory : Category -> Html msg
 displayCategory category =
     let
         link =
