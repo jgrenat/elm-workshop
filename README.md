@@ -9,13 +9,12 @@ You need to download and install Elm through [the following link](https://guide.
 
 ## Install a plugin for your editor
 
-Install a plugin for your editor to be able to understand Elm. You can find some instructions for these editors: 
+Install a plugin for your editor to be able to understand Elm. You can find some instructions for these editors (I advice you to use IntelliJ or VS Code): 
 
  - [Atom](https://atom.io/packages/language-elm)
  - [Brackets](https://github.com/tommot348/elm-brackets)
  - [Emacs](https://github.com/jcollard/elm-mode)
  - [Webstorm / IntelliJ](https://github.com/klazuka/intellij-elm)
- - [Light Table](https://github.com/rundis/elm-light)
  - [Sublime Text](https://packagecontrol.io/packages/Elm%20Language%20Support)
  - [Vim](https://github.com/ElmCast/elm-vim)
  - [VS Code](https://github.com/sbrink/vscode-elm)
