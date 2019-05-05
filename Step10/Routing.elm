@@ -1,26 +1,42 @@
-module Step11.Routing exposing (Category, Model, Msg(..), RemoteData(..), categoriesDecoder, displayCategoriesList, displayCategoriesPage, displayCategory, displayHomepage, displayPage, displayResultPage, displayTestsAndView, getCategoriesRequest, getCategoriesUrl, init, initialModel, main, update, view)
+module Step10.Routing exposing (Category, Model, Msg(..), RemoteData(..), categoriesDecoder, displayCategoriesList, displayCategoriesPage, displayCategory, displayTestsAndView, getCategoriesRequest, getCategoriesUrl, init, main, update, view)
 
-import Html exposing (Html, a, button, div, h1, iframe, li, text, ul)
-import Html.Attributes exposing (class, href, src, style)
-import Http
+import Browser exposing (Document, UrlRequest(..))
+import Browser.Navigation as Navigation exposing (Key)
+import Html exposing (Html, a, div, h1, li, text, ul)
+import Html.Attributes exposing (class, href)
+import Http exposing (expectJson)
 import Json.Decode as Decode
-import Navigation exposing (Location)
 import Result exposing (Result)
+import Url exposing (Url)
+import Utils.Utils exposing (styles, testsIframe)
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Navigation.program OnLocationChange
-        { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
+    Browser.application
+        { init = init
+        , update = update
+        , view = displayTestsAndView
+        , subscriptions = \model -> Sub.none
+        , onUrlRequest = OnUrlRequest
+        , onUrlChange = OnUrlChange
+        }
 
 
 type Msg
     = OnCategoriesFetched (Result Http.Error (List Category))
-    | OnLocationChange Location
+    | OnUrlRequest UrlRequest
+    | OnUrlChange Url
+
+
+type Page
+    = HomePage
+    | CategoriesPage (RemoteData (List Category))
 
 
 type alias Model =
-    { categories : RemoteData (List Category)
+    { key : Key
+    , page : Page
     }
 
 
@@ -34,26 +50,24 @@ type RemoteData a
     | OnError
 
 
-initialModel : Location -> Model
-initialModel location =
-    Model Loading
-
-
-init : Location -> ( Model, Cmd Msg )
-init location =
-    ( initialModel location, Http.send OnCategoriesFetched getCategoriesRequest )
+init : () -> Url -> Key -> ( Model, Cmd Msg )
+init _ url key =
+    ( Model key HomePage, getCategoriesRequest )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnCategoriesFetched (Ok categories) ->
-            ( { model | categories = Loaded categories }, Cmd.none )
+            ( model, Cmd.none )
 
         OnCategoriesFetched (Err err) ->
-            ( { model | categories = OnError }, Cmd.none )
+            ( model, Cmd.none )
 
-        OnLocationChange location ->
+        OnUrlRequest urlRequest ->
+            ( model, Cmd.none )
+
+        OnUrlChange url ->
             ( model, Cmd.none )
 
 
@@ -69,28 +83,25 @@ categoriesDecoder =
         |> Decode.field "trivia_categories"
 
 
-getCategoriesRequest : Http.Request (List Category)
+getCategoriesRequest : Cmd Msg
 getCategoriesRequest =
-    Http.get getCategoriesUrl categoriesDecoder
+    Http.get
+        { url = getCategoriesUrl
+        , expect = expectJson OnCategoriesFetched categoriesDecoder
+        }
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ displayPage model ]
+        [ displayHomePage ]
 
 
-displayPage : Model -> Html Msg
-displayPage model =
-    displayHomepage model
-
-
-displayHomepage : Model -> Html Msg
-displayHomepage model =
+displayHomePage : Html Msg
+displayHomePage =
     div [ class "gameOptions" ]
         [ h1 [] [ text "Quiz Game" ]
         , a [ class "btn btn-primary", href "#categories" ] [ text "Play from a category" ]
-        , a [ class "btn btn-primary", href "#result/3" ] [ text "Show me the results page" ]
         ]
 
 
@@ -99,14 +110,6 @@ displayCategoriesPage categories =
     div []
         [ h1 [] [ text "Play within a given category" ]
         , displayCategoriesList categories
-        ]
-
-
-displayResultPage : Int -> Html Msg
-displayResultPage score =
-    div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ toString score ++ " / 5") ]
-        , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
         ]
 
 
@@ -128,7 +131,7 @@ displayCategory : Category -> Html Msg
 displayCategory category =
     let
         path =
-            "#game/category/" ++ toString category.id
+            "#game/category/" ++ String.fromInt category.id
     in
     li []
         [ a [ class "btn btn-primary", href path ] [ text category.name ]
@@ -141,9 +144,11 @@ displayCategory category =
 ------------------------------------------------------------------------------------------------------
 
 
-displayTestsAndView : Model -> Html Msg
+displayTestsAndView : Model -> Document Msg
 displayTestsAndView model =
-    div []
-        [ div [ class "jumbotron" ] [ view model ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
+    Document
+        "Step 10"
+        [ styles
+        , div [ class "jumbotron" ] [ view model ]
+        , testsIframe
         ]
