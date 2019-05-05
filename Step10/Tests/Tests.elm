@@ -3,10 +3,9 @@ module Step11.Tests.Tests exposing (suite)
 import Browser exposing (Document, UrlRequest(..))
 import Browser.Navigation exposing (Key)
 import Expect exposing (Expectation)
-import Fuzz exposing (intRange)
 import Random
 import Step10.Routing exposing (Category, Model, Msg(..), RemoteData(..), init, update, view)
-import Test exposing (Test, concat, fuzz, test)
+import Test exposing (Test, concat, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (text)
 import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
@@ -42,66 +41,76 @@ main =
         }
 
 
-fakeUrl : Url
-fakeUrl =
+fakeHomeUrl : Url
+fakeHomeUrl =
     { protocol = Http
     , host = "localhost"
     , port_ = Just 80
     , path = "/"
     , query = Nothing
-    , fragment = Just "/home"
+    , fragment = Nothing
     }
+
+
+fakeCategoriesUrl : Url
+fakeCategoriesUrl =
+    { fakeHomeUrl | fragment = Just "categories" }
 
 
 suite : Key -> Test
 suite key =
     concat
-        [ atLoadingCategoriesShouldBeFetched key
-        , atLoadingHomepageShouldBeDisplayed key
-        , whenGoingToCategoriesLinkCategoriesShouldBeDisplayed key
-        , whenGoingToResultLinkResultShouldBeDisplayed key
-        , whenGoingToResultLinkResultShouldBeDisplayedWithProperScore key
+        [ atLoadingHomepageShouldBeDisplayed key
+        , atLoadingCategoriesPageShouldBeDisplayed key
+        , whenClickingToCategoriesLinkCategoriesShouldBeDisplayed key
+        , atLoadingCategoriesShouldNotBeFetched key
+        , atLoadingCategoriesShouldBeFetched key
         ]
-
-
-atLoadingCategoriesShouldBeFetched : Key -> Test
-atLoadingCategoriesShouldBeFetched key =
-    test "When loading the page, the categories should be fetched" <|
-        \() ->
-            Expect.notEqual Cmd.none (init () fakeUrl key |> Tuple.second)
 
 
 atLoadingHomepageShouldBeDisplayed : Key -> Test
 atLoadingHomepageShouldBeDisplayed key =
-    test "When loading the page, the homepage should appear" <|
+    test "When loading the page with home URL, the homepage should appear" <|
         \() ->
             let
                 initialModel =
-                    init () fakeUrl key |> Tuple.first
+                    init () fakeHomeUrl key |> Tuple.first
             in
             view initialModel
                 |> Query.fromHtml
                 |> Expect.all
                     [ Query.has [ text "Quiz Game" ]
                     , Query.has [ text "Play from a category" ]
-                    , Query.has [ text "Show me the results page" ]
                     ]
 
 
-whenGoingToCategoriesLinkCategoriesShouldBeDisplayed : Key -> Test
-whenGoingToCategoriesLinkCategoriesShouldBeDisplayed key =
+atLoadingCategoriesPageShouldBeDisplayed : Key -> Test
+atLoadingCategoriesPageShouldBeDisplayed key =
+    test "When loading the page with categories URL, the categories page should appear" <|
+        \() ->
+            let
+                initialModel =
+                    init () fakeCategoriesUrl key |> Tuple.first
+            in
+            view initialModel
+                |> Query.fromHtml
+                |> Expect.all
+                    [ Query.has [ text "Categories are loading" ]
+                    , Query.hasNot [ text "Play from a category" ]
+                    ]
+
+
+whenClickingToCategoriesLinkCategoriesShouldBeDisplayed : Key -> Test
+whenClickingToCategoriesLinkCategoriesShouldBeDisplayed key =
     test "When we go on the categories link (/#categories), the categories page should be displayed" <|
         \() ->
             let
                 initialModel =
-                    init () fakeUrl key
+                    init () fakeHomeUrl key
                         |> Tuple.first
 
-                newLocation =
-                    { fakeUrl | fragment = Just "categories" }
-
                 updatedView =
-                    update (OnUrlChange newLocation) initialModel
+                    update (OnUrlChange fakeCategoriesUrl) initialModel
                         |> Tuple.first
                         |> view
             in
@@ -113,48 +122,15 @@ whenGoingToCategoriesLinkCategoriesShouldBeDisplayed key =
                     ]
 
 
-whenGoingToResultLinkResultShouldBeDisplayed : Key -> Test
-whenGoingToResultLinkResultShouldBeDisplayed key =
-    test "When we click on the second link, the result page should be displayed" <|
+atLoadingCategoriesShouldNotBeFetched : Key -> Test
+atLoadingCategoriesShouldNotBeFetched key =
+    test "When loading the page with the home URL, the categories should not be fetched" <|
         \() ->
-            let
-                initialModel =
-                    init () fakeUrl key
-                        |> Tuple.first
-
-                newLocation =
-                    { fakeUrl | fragment = Just "result/3" }
-
-                updatedView =
-                    update (OnUrlChange newLocation) initialModel
-                        |> Tuple.first
-                        |> view
-            in
-            updatedView
-                |> Query.fromHtml
-                |> Expect.all
-                    [ Query.has [ text "Your score" ]
-                    , Query.hasNot [ text "Play from a category" ]
-                    ]
+            Expect.equal Cmd.none (init () fakeHomeUrl key |> Tuple.second)
 
 
-whenGoingToResultLinkResultShouldBeDisplayedWithProperScore : Key -> Test
-whenGoingToResultLinkResultShouldBeDisplayedWithProperScore key =
-    fuzz (intRange 0 5) "When we click on the second link, the result page should be displayed with the proper result" <|
-        \score ->
-            let
-                initialModel =
-                    init () fakeUrl key
-                        |> Tuple.first
-
-                newLocation =
-                    { fakeUrl | fragment = Just <| "result/" ++ String.fromInt score }
-
-                updatedView =
-                    update (OnUrlChange newLocation) initialModel
-                        |> Tuple.first
-                        |> view
-            in
-            updatedView
-                |> Query.fromHtml
-                |> Query.has [ String.fromInt score ++ " / 5" |> text ]
+atLoadingCategoriesShouldBeFetched : Key -> Test
+atLoadingCategoriesShouldBeFetched key =
+    test "When loading the page with the categories URL, the categories should be fetched" <|
+        \() ->
+            Expect.notEqual Cmd.none (init () fakeCategoriesUrl key |> Tuple.second)

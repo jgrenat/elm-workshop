@@ -1,9 +1,9 @@
-module Step10.Routing exposing (Category, Model, Msg(..), RemoteData(..), categoriesDecoder, displayCategoriesList, displayCategoriesPage, displayCategory, displayHomepage, displayPage, displayResultPage, displayTestsAndView, getCategoriesRequest, getCategoriesUrl, init, initialModel, main, update, view)
+module Step10.Routing exposing (Category, Model, Msg(..), RemoteData(..), categoriesDecoder, displayCategoriesList, displayCategoriesPage, displayCategory, displayTestsAndView, getCategoriesRequest, getCategoriesUrl, init, main, update, view)
 
-import Browser exposing (Document, UrlRequest)
-import Browser.Navigation exposing (Key)
-import Html exposing (Html, a, button, div, h1, iframe, li, text, ul)
-import Html.Attributes exposing (class, href, src, style)
+import Browser exposing (Document, UrlRequest(..))
+import Browser.Navigation as Navigation exposing (Key)
+import Html exposing (Html, a, div, h1, li, text, ul)
+import Html.Attributes exposing (class, href)
 import Http exposing (expectJson)
 import Json.Decode as Decode
 import Result exposing (Result)
@@ -29,9 +29,14 @@ type Msg
     | OnUrlChange Url
 
 
+type Page
+    = HomePage
+    | CategoriesPage (RemoteData (List Category))
+
+
 type alias Model =
     { key : Key
-    , categories : RemoteData (List Category)
+    , page : Page
     }
 
 
@@ -45,24 +50,19 @@ type RemoteData a
     | OnError
 
 
-initialModel : Url -> Key -> Model
-initialModel url key =
-    Model key Loading
-
-
 init : () -> Url -> Key -> ( Model, Cmd Msg )
 init _ url key =
-    ( initialModel url key, getCategoriesRequest )
+    ( Model key HomePage, getCategoriesRequest )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnCategoriesFetched (Ok categories) ->
-            ( { model | categories = Loaded categories }, Cmd.none )
+            ( model, Cmd.none )
 
         OnCategoriesFetched (Err err) ->
-            ( { model | categories = OnError }, Cmd.none )
+            ( model, Cmd.none )
 
         OnUrlRequest urlRequest ->
             ( model, Cmd.none )
@@ -94,20 +94,14 @@ getCategoriesRequest =
 view : Model -> Html Msg
 view model =
     div []
-        [ displayPage model ]
+        [ displayHomePage ]
 
 
-displayPage : Model -> Html Msg
-displayPage model =
-    displayHomepage model
-
-
-displayHomepage : Model -> Html Msg
-displayHomepage model =
+displayHomePage : Html Msg
+displayHomePage =
     div [ class "gameOptions" ]
         [ h1 [] [ text "Quiz Game" ]
         , a [ class "btn btn-primary", href "#categories" ] [ text "Play from a category" ]
-        , a [ class "btn btn-primary", href "#result/3" ] [ text "Show me the results page" ]
         ]
 
 
@@ -116,14 +110,6 @@ displayCategoriesPage categories =
     div []
         [ h1 [] [ text "Play within a given category" ]
         , displayCategoriesList categories
-        ]
-
-
-displayResultPage : Int -> Html Msg
-displayResultPage score =
-    div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ String.fromInt score ++ " / 5") ]
-        , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
         ]
 
 
