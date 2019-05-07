@@ -1,33 +1,50 @@
-module Step14.Main exposing (Category, Model, Msg(..), RemoteData(..), Route(..), categoriesDecoder, displayCategoriesList, displayCategoriesPage, displayCategory, displayHomepage, displayPage, displayResultPage, displayTestsAndView, getCategoriesRequest, getCategoriesUrl, init, initialModel, main, matcher, parseLocation, update, view)
+module Step14.Main exposing (Category, Model, Msg(..), Page(..), RemoteData(..), categoriesDecoder, displayCategoriesList, displayCategoriesPage, displayCategory, displayHomePage, displayView, getCategoriesRequest, getCategoriesUrl, init, main, update, view)
 
-import Html exposing (Html, a, button, div, h1, iframe, li, text, ul)
-import Html.Attributes exposing (class, href, src, style)
-import Http
+import Browser exposing (Document, UrlRequest(..))
+import Browser.Navigation as Navigation exposing (Key)
+import Html exposing (Html, a, div, h1, li, p, text, ul)
+import Html.Attributes exposing (class, href)
+import Http exposing (expectJson)
 import Json.Decode as Decode
-import Navigation exposing (Location)
 import Result exposing (Result)
-import UrlParser exposing (..)
+import Url exposing (Url)
+import Url.Parser as Parser exposing ((</>))
+import Utils.Utils exposing (styles, testsIframe)
 
 
-getCategoriesUrl : String
-getCategoriesUrl =
-    "https://opentdb.com/api_category.php"
-
-
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Navigation.program OnLocationChange
-        { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
+    Browser.application
+        { init = init
+        , update = update
+        , view = displayView
+        , subscriptions = always Sub.none
+        , onUrlRequest = OnUrlRequest
+        , onUrlChange = OnUrlChange
+        }
 
 
 type Msg
     = OnCategoriesFetched (Result Http.Error (List Category))
-    | OnLocationChange Location
+    | OnUrlRequest UrlRequest
+    | OnUrlChange Url
+
+
+type Page
+    = HomePage
+    | CategoriesPage (RemoteData (List Category))
+    | ResultPage Int
+
+
+type Route
+    = HomeRoute
+    | CategoriesRoute
+    | ResultRoute Int
 
 
 type alias Model =
-    { categories : RemoteData (List Category)
-    , route : Route
+    { key : Key
+    , page : Page
     }
 
 
@@ -41,52 +58,83 @@ type RemoteData a
     | OnError
 
 
-type Route
-    = HomepageRoute
-    | CategoriesRoute
-    | ResultRoute Int
-
-
-matcher : Parser (Route -> a) a
-matcher =
-    oneOf
-        [ map HomepageRoute top
-        , map CategoriesRoute (s "categories")
-        , map ResultRoute (s "result" </> int)
+routeParser : Parser.Parser (Route -> Route) Route
+routeParser =
+    Parser.oneOf
+        [ Parser.map HomeRoute Parser.top
+        , Parser.map CategoriesRoute (Parser.s "categories")
+        , Parser.map ResultRoute (Parser.s "result" </> Parser.int)
         ]
 
 
-parseLocation : Location -> Route
-parseLocation location =
-    parseHash matcher location
-        |> Maybe.withDefault HomepageRoute
-
-
-initialModel : Location -> Model
-initialModel location =
+parseUrlToPageAndCommand : Url -> ( Page, Cmd Msg )
+parseUrlToPageAndCommand url =
     let
-        route =
-            parseLocation location
+        routeMaybe : Maybe Route
+        routeMaybe =
+            Parser.parse routeParser { url | path = url.fragment |> Maybe.withDefault "", fragment = Nothing }
     in
-    Model Loading route
+    case routeMaybe of
+        Just CategoriesRoute ->
+            ( CategoriesPage Loading, getCategoriesRequest )
+
+        Just (ResultRoute score) ->
+            ( ResultPage score, Cmd.none )
+
+        Just HomeRoute ->
+            ( HomePage, Cmd.none )
+
+        Nothing ->
+            ( HomePage, Cmd.none )
 
 
-init : Location -> ( Model, Cmd Msg )
-init location =
-    ( initialModel location, Http.send OnCategoriesFetched getCategoriesRequest )
+init : () -> Url -> Key -> ( Model, Cmd Msg )
+init _ url key =
+    let
+        ( page, cmd ) =
+            parseUrlToPageAndCommand url
+    in
+    ( Model key page, cmd )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnCategoriesFetched (Ok categories) ->
-            ( { model | categories = Loaded categories }, Cmd.none )
+            case model.page of
+                CategoriesPage _ ->
+                    ( { model | page = CategoriesPage (Loaded categories) }, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
         OnCategoriesFetched (Err err) ->
-            ( { model | categories = OnError }, Cmd.none )
+            case model.page of
+                CategoriesPage _ ->
+                    ( { model | page = CategoriesPage OnError }, Cmd.none )
 
-        OnLocationChange location ->
-            ( { model | route = parseLocation location }, Cmd.none )
+                _ ->
+                    ( model, Cmd.none )
+
+        OnUrlRequest urlRequest ->
+            case urlRequest of
+                External url ->
+                    ( model, Navigation.load url )
+
+                Internal url ->
+                    ( model, Navigation.pushUrl model.key (Url.toString url) )
+
+        OnUrlChange url ->
+            let
+                ( page, cmd ) =
+                    parseUrlToPageAndCommand url
+            in
+            ( { model | page = page }, cmd )
+
+
+getCategoriesUrl : String
+getCategoriesUrl =
+    "https://opentdb.com/api_category.php"
 
 
 categoriesDecoder : Decode.Decoder (List Category)
@@ -96,37 +144,54 @@ categoriesDecoder =
         |> Decode.field "trivia_categories"
 
 
-getCategoriesRequest : Http.Request (List Category)
+getCategoriesRequest : Cmd Msg
 getCategoriesRequest =
-    Http.get getCategoriesUrl categoriesDecoder
+    Http.get
+        { url = getCategoriesUrl
+        , expect = expectJson OnCategoriesFetched categoriesDecoder
+        }
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ displayPage model ]
+        [ case model.page of
+            HomePage ->
+                displayHomePage
+
+            CategoriesPage categoriesModel ->
+                displayCategoriesPage categoriesModel
+
+            ResultPage score ->
+                displayResultPage score
+        ]
 
 
-displayPage : Model -> Html Msg
-displayPage model =
-    case model.route of
-        HomepageRoute ->
-            displayHomepage model
-
-        ResultRoute score ->
-            displayResultPage score
-
-        CategoriesRoute ->
-            displayCategoriesPage model.categories
-
-
-displayHomepage : Model -> Html Msg
-displayHomepage model =
+displayHomePage : Html Msg
+displayHomePage =
     div [ class "gameOptions" ]
         [ h1 [] [ text "Quiz Game" ]
-        , a [ class "btn btn-primary", href "#game" ] [ text "Play random questions" ]
         , a [ class "btn btn-primary", href "#categories" ] [ text "Play from a category" ]
+        , a [ class "btn btn-primary", href "#game" ] [ text "Play random questions" ]
         ]
+
+
+displayResultPage : Int -> Html Msg
+displayResultPage score =
+    div [ class "score" ]
+        [ h1 [] [ text ("Your score: " ++ String.fromInt score ++ " / 5") ]
+        , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
+        , p [] [ text (displayComment score) ]
+        ]
+
+
+displayComment : Int -> String
+displayComment score =
+    if score <= 3 then
+        "Keep going, I'm sure you can do better!"
+
+    else
+        "Congrats, this is really good!"
 
 
 displayCategoriesPage : RemoteData (List Category) -> Html Msg
@@ -134,14 +199,6 @@ displayCategoriesPage categories =
     div []
         [ h1 [] [ text "Play within a given category" ]
         , displayCategoriesList categories
-        ]
-
-
-displayResultPage : Int -> Html Msg
-displayResultPage score =
-    div [ class "score" ]
-        [ h1 [] [ text ("Your score: " ++ toString score ++ " / 5") ]
-        , a [ class "btn btn-primary", href "#" ] [ text "Replay" ]
         ]
 
 
@@ -163,7 +220,7 @@ displayCategory : Category -> Html Msg
 displayCategory category =
     let
         path =
-            "#game/category/" ++ toString category.id
+            "#game/category/" ++ String.fromInt category.id
     in
     li []
         [ a [ class "btn btn-primary", href path ] [ text category.name ]
@@ -176,9 +233,11 @@ displayCategory category =
 ------------------------------------------------------------------------------------------------------
 
 
-displayTestsAndView : Model -> Html Msg
-displayTestsAndView model =
-    div []
-        [ div [ class "jumbotron" ] [ view model ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
+displayView : Model -> Document Msg
+displayView model =
+    Document
+        "Step 14"
+        [ styles
+        , view model
+        , testsIframe
         ]

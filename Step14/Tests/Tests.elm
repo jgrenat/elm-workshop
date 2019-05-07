@@ -1,76 +1,90 @@
-module Step14.Tests.Tests exposing (atBasePathHomepageShouldBeDisplayed, atLoadingCategoriesShouldBeFetched, categoriesUrl, expectedGetCategoriesCmd, fakeLocation, main, questionsUrl, whenGoingToCategoriesPathCategoriesShouldBeDisplayed, whenGoingToGamePathGamePageShouldBeDisplayed, whenGoingToGamePathQuestionsShouldBeFetched, whenGoingToResultPathResultShouldBeDisplayed, whenGoingToResultPathResultShouldBeDisplayedWithProperScore)
+module Step14.Tests.Tests exposing (main)
 
+import Browser exposing (Document)
+import Browser.Navigation exposing (Key)
 import Expect exposing (Expectation)
 import Fuzz exposing (intRange)
-import Html.Attributes exposing (href, type_)
-import Http exposing (Error(..))
-import Json.Encode as Encode
-import Step14.Main exposing (Msg(..), categoriesDecoder, init, update, view)
-import Test exposing (Test, describe, fuzz, test)
-import Test.Html.Event exposing (click, simulate, toResult)
+import Random
+import Step14.Main exposing (Msg(..), init, update, view)
+import Test exposing (Test, concat, fuzz, test)
 import Test.Html.Query as Query
-import Test.Html.Selector exposing (attribute, text)
-import Test.Runner.Html exposing (run)
-import Testable.Html.Selectors exposing (tag)
+import Test.Html.Selector exposing (text)
+import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
+import Url exposing (Protocol(..), Url)
 
 
-fakeLocation =
-    { href = "http://localhost:8080/Step14/index.html"
+main : Program () Key ()
+main =
+    let
+        testsView key =
+            Document
+                "Tests for step 14"
+                [ viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) (testsSuite key)
+                ]
+
+        init _ _ key =
+            ( key, Cmd.none )
+
+        update _ key =
+            ( key, Cmd.none )
+    in
+    Browser.application
+        { init = init
+        , update = update
+        , view = testsView
+        , subscriptions = always Sub.none
+        , onUrlRequest = always ()
+        , onUrlChange = always ()
+        }
+
+
+fakeHomeUrl : Url
+fakeHomeUrl =
+    { protocol = Http
     , host = "localhost"
-    , hostname = "localhost"
-    , protocol = "http:"
-    , origin = "http://localhost:8080/Step14/"
-    , port_ = "8000"
-    , pathname = "/Step14/index.html"
-    , search = ""
-    , hash = ""
-    , username = ""
-    , password = ""
+    , port_ = Just 80
+    , path = "/"
+    , query = Nothing
+    , fragment = Nothing
     }
 
 
-categoriesUrl : String
-categoriesUrl =
-    "https://opentdb.com/api_category.php"
+fakeCategoriesUrl : Url
+fakeCategoriesUrl =
+    { fakeHomeUrl | fragment = Just "categories" }
 
 
-questionsUrl : String
-questionsUrl =
-    "https://opentdb.com/api.php?amount=5&type=multiple"
+fakeResultUrl : Int -> Url
+fakeResultUrl score =
+    { fakeHomeUrl | fragment = Just ("result/" ++ String.fromInt score) }
 
 
-main =
-    describe "What we expect:"
-        [ atLoadingCategoriesShouldBeFetched
-        , atBasePathHomepageShouldBeDisplayed
-        , whenGoingToCategoriesPathCategoriesShouldBeDisplayed
-        , whenGoingToResultPathResultShouldBeDisplayed
-        , whenGoingToResultPathResultShouldBeDisplayedWithProperScore
-        , whenGoingToGamePathGamePageShouldBeDisplayed
-        , whenGoingToGamePathQuestionsShouldBeFetched
+fakeGameUrl : Url
+fakeGameUrl =
+    { fakeHomeUrl | fragment = Just "game" }
+
+
+testsSuite : Key -> Test
+testsSuite key =
+    concat
+        [ whenGoingToGamePathGamePageShouldBeDisplayed key
+        , whenGoingToGamePathQuestionsShouldBeFetched key
+        , atBasePathHomepageShouldBeDisplayed key
+        , atLoadingCategoriesShouldNotBeFetched key
+        , categoriesShouldBeLoaded key
+        , whenGoingToCategoriesPathCategoriesShouldBeDisplayed key
+        , whenGoingToResultPathResultShouldBeDisplayed key
+        , whenGoingToResultPathResultShouldBeDisplayedWithProperScore key
         ]
-        |> run
 
 
-expectedGetCategoriesCmd =
-    Http.get categoriesUrl categoriesDecoder
-        |> Http.send OnCategoriesFetched
-
-
-atLoadingCategoriesShouldBeFetched : Test
-atLoadingCategoriesShouldBeFetched =
-    test "When loading the page, the categories should be fetched" <|
-        \() ->
-            Expect.notEqual Cmd.none (init fakeLocation |> Tuple.second)
-
-
-atBasePathHomepageShouldBeDisplayed : Test
-atBasePathHomepageShouldBeDisplayed =
-    test "When loading the page, the homepage should appear" <|
+atBasePathHomepageShouldBeDisplayed : Key -> Test
+atBasePathHomepageShouldBeDisplayed key =
+    test "When loading the page with home URL, the homepage should appear" <|
         \() ->
             let
                 initialModel =
-                    init fakeLocation |> Tuple.first
+                    init () fakeHomeUrl key |> Tuple.first
             in
             view initialModel
                 |> Query.fromHtml
@@ -81,20 +95,31 @@ atBasePathHomepageShouldBeDisplayed =
                     ]
 
 
-whenGoingToCategoriesPathCategoriesShouldBeDisplayed : Test
-whenGoingToCategoriesPathCategoriesShouldBeDisplayed =
+atLoadingCategoriesShouldNotBeFetched : Key -> Test
+atLoadingCategoriesShouldNotBeFetched key =
+    test "When loading the page with home URL, nothing should be fetched" <|
+        \() ->
+            Expect.equal Cmd.none (init () fakeHomeUrl key |> Tuple.second)
+
+
+categoriesShouldBeLoaded : Key -> Test
+categoriesShouldBeLoaded key =
+    test "When loading the page with categories URL, categories should be fetched" <|
+        \() ->
+            Expect.notEqual Cmd.none (init () fakeCategoriesUrl key |> Tuple.second)
+
+
+whenGoingToCategoriesPathCategoriesShouldBeDisplayed : Key -> Test
+whenGoingToCategoriesPathCategoriesShouldBeDisplayed key =
     test "When we go on the categories link (/#categories), the categories page should be displayed" <|
         \() ->
             let
                 initialModel =
-                    init fakeLocation
+                    init () fakeHomeUrl key
                         |> Tuple.first
 
-                newLocation =
-                    { fakeLocation | hash = "#categories" }
-
                 updatedView =
-                    update (OnLocationChange newLocation) initialModel
+                    update (OnUrlChange fakeCategoriesUrl) initialModel
                         |> Tuple.first
                         |> view
             in
@@ -106,20 +131,17 @@ whenGoingToCategoriesPathCategoriesShouldBeDisplayed =
                     ]
 
 
-whenGoingToResultPathResultShouldBeDisplayed : Test
-whenGoingToResultPathResultShouldBeDisplayed =
+whenGoingToResultPathResultShouldBeDisplayed : Key -> Test
+whenGoingToResultPathResultShouldBeDisplayed key =
     test "When we go to the path \"#result/{score}\", the result page should be displayed" <|
         \() ->
             let
                 initialModel =
-                    init fakeLocation
+                    init () fakeHomeUrl key
                         |> Tuple.first
 
-                newLocation =
-                    { fakeLocation | hash = "#result/3" }
-
                 updatedView =
-                    update (OnLocationChange newLocation) initialModel
+                    update (OnUrlChange (fakeResultUrl 5)) initialModel
                         |> Tuple.first
                         |> view
             in
@@ -131,42 +153,36 @@ whenGoingToResultPathResultShouldBeDisplayed =
                     ]
 
 
-whenGoingToResultPathResultShouldBeDisplayedWithProperScore : Test
-whenGoingToResultPathResultShouldBeDisplayedWithProperScore =
+whenGoingToResultPathResultShouldBeDisplayedWithProperScore : Key -> Test
+whenGoingToResultPathResultShouldBeDisplayedWithProperScore key =
     fuzz (intRange 0 5) "When we go to the path \"#result/{score}\", the result page should be displayed with the proper result" <|
         \score ->
             let
                 initialModel =
-                    init fakeLocation
+                    init () fakeHomeUrl key
                         |> Tuple.first
 
-                newLocation =
-                    { fakeLocation | hash = "#result/" ++ toString score }
-
                 updatedView =
-                    update (OnLocationChange newLocation) initialModel
+                    update (OnUrlChange (fakeResultUrl score)) initialModel
                         |> Tuple.first
                         |> view
             in
             updatedView
                 |> Query.fromHtml
-                |> Query.has [ toString score ++ " / 5" |> text ]
+                |> Query.has [ String.fromInt score ++ " / 5" |> text ]
 
 
-whenGoingToGamePathGamePageShouldBeDisplayed : Test
-whenGoingToGamePathGamePageShouldBeDisplayed =
+whenGoingToGamePathGamePageShouldBeDisplayed : Key -> Test
+whenGoingToGamePathGamePageShouldBeDisplayed key =
     test "When we go to the path \"#game\", the game page should be displayed" <|
         \() ->
             let
                 initialModel =
-                    init fakeLocation
+                    init () fakeHomeUrl key
                         |> Tuple.first
 
-                newLocation =
-                    { fakeLocation | hash = "#game" }
-
                 updatedView =
-                    update (OnLocationChange newLocation) initialModel
+                    update (OnUrlChange fakeGameUrl) initialModel
                         |> Tuple.first
                         |> view
             in
@@ -175,20 +191,17 @@ whenGoingToGamePathGamePageShouldBeDisplayed =
                 |> Query.has [ text "Loading the questions" ]
 
 
-whenGoingToGamePathQuestionsShouldBeFetched : Test
-whenGoingToGamePathQuestionsShouldBeFetched =
+whenGoingToGamePathQuestionsShouldBeFetched : Key -> Test
+whenGoingToGamePathQuestionsShouldBeFetched key =
     test "When we go to the path \"#game\", questions should be fetched" <|
         \() ->
             let
                 initialModel =
-                    init fakeLocation
+                    init () fakeHomeUrl key
                         |> Tuple.first
 
-                newLocation =
-                    { fakeLocation | hash = "#game" }
-
                 updatedCommand =
-                    update (OnLocationChange newLocation) initialModel
+                    update (OnUrlChange fakeGameUrl) initialModel
                         |> Tuple.second
             in
             Expect.notEqual Cmd.none updatedCommand
