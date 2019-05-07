@@ -1,12 +1,12 @@
-module Step13.Solution.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), answersDecoder, correctAnswerDecoder, displayAnswer, displayTestsAndView, gamePage, getQuestionsRequest, init, main, questionDecoder, questionsDecoder, questionsUrl, testableProgram, update, view)
+module Step13.Solution.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), answersDecoder, correctAnswerDecoder, displayAnswer, displayTestsAndView, gamePage, getQuestionsRequest, init, main, questionDecoder, questionsDecoder, questionsUrl, update, view)
 
+import Browser
+import Html exposing (Html, a, div, h2, li, text, ul)
+import Html.Attributes exposing (class)
+import Http exposing (expectJson)
 import Json.Decode as Decode
 import Result exposing (Result)
-import Testable
-import Testable.Cmd
-import Testable.Html exposing (Html, a, div, h2, iframe, li, program, text, ul)
-import Testable.Html.Attributes exposing (class, src, style)
-import Testable.Http as Http
+import Utils.Utils exposing (styles)
 
 
 questionsUrl : String
@@ -14,9 +14,14 @@ questionsUrl =
     "https://opentdb.com/api.php?amount=5&type=multiple"
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
+    Browser.element
+        { init = \_ -> init
+        , update = update
+        , view = displayTestsAndView
+        , subscriptions = \model -> Sub.none
+        }
 
 
 type alias Question =
@@ -53,12 +58,20 @@ type RemoteData a
     | OnError
 
 
-init : ( Model, Testable.Cmd.Cmd Msg )
+init : ( Model, Cmd Msg )
 init =
-    ( Model Loading, Http.send OnQuestionsFetched getQuestionsRequest )
+    ( Model Loading, getQuestionsRequest )
 
 
-update : Msg -> Model -> ( Model, Testable.Cmd.Cmd Msg )
+getQuestionsRequest : Cmd Msg
+getQuestionsRequest =
+    Http.get
+        { url = questionsUrl
+        , expect = expectJson OnQuestionsFetched questionsDecoder
+        }
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         OnQuestionsFetched (Ok (firstQuestion :: remainingQuestions)) ->
@@ -66,13 +79,13 @@ update message model =
                 game =
                     Game firstQuestion remainingQuestions
             in
-            ( Model (Loaded game), Testable.Cmd.none )
+            ( Model (Loaded game), Cmd.none )
 
         OnQuestionsFetched _ ->
-            ( Model OnError, Testable.Cmd.none )
+            ( Model OnError, Cmd.none )
 
 
-view : Model -> Testable.Html.Html Msg
+view : Model -> Html Msg
 view model =
     case model.game of
         Loading ->
@@ -96,11 +109,6 @@ gamePage question =
 displayAnswer : String -> Html msg
 displayAnswer answer =
     li [] [ a [ class "btn btn-primary" ] [ text answer ] ]
-
-
-getQuestionsRequest : Http.Request (List Question)
-getQuestionsRequest =
-    Http.get questionsUrl questionsDecoder
 
 
 questionsDecoder : Decode.Decoder (List Question)
@@ -140,26 +148,14 @@ answersDecoder =
            correctAnswerDecoder
            (Decode.field "incorrect_answers" (Decode.list Decode.string))
 -}
+------------------------------------------------------------------------------------------------------
+-- Don't modify the code below, it displays the view and the tests and helps with testing your code --
+------------------------------------------------------------------------------------------------------
 
 
-displayTestsAndView : Model -> Testable.Html.Html Msg
+displayTestsAndView : Model -> Html Msg
 displayTestsAndView model =
     div []
-        [ div [ class "jumbotron" ] [ view model ]
+        [ styles
+        , div [ class "jumbotron" ] [ view model ]
         ]
-
-
-testableProgram :
-    { init : ( model, Testable.Cmd.Cmd msg )
-    , update : msg -> model -> ( model, Testable.Cmd.Cmd msg )
-    , subscriptions : model -> Sub msg
-    , view : model -> Html msg
-    }
-    -> Program Never model msg
-testableProgram options =
-    program
-        { init = Testable.init options.init
-        , view = Testable.view options.view
-        , update = Testable.update options.update
-        , subscriptions = options.subscriptions
-        }
