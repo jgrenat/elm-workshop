@@ -1,12 +1,12 @@
-# Étape 12 : La page de jeu
+# Step 12: Game page
 
-## Objectif
+## Goal
 
-C'est bien beau de coder un quiz, mais sans questions l'exercice est inutile ! C'est la partie restante de l'application et on va commencer par simplement afficher une question.
+Our quiz game can display the home page, the list of categories, the result page, but we can't even display questions! Let's do that!
 
-<img alt="Screenshot of the page to realize" src="../images/step12.png" style="width: 100%; border: 1px solid black;">
+![Screenshot of the game page](../Utils/images/step12.png)
 
-Voici le code HTML à réaliser :
+Here is the HTML code you need to have:
 
 ```html
 <div>
@@ -20,12 +20,12 @@ Voici le code HTML à réaliser :
 </div>
 ```
 
-Pas d'intelligence pour l'instant, on garde ça pour les prochaines étapes ! 
+Everything is static for now, we will add the logic in the next steps. 
  
 
 ## Let's start!
 
-[Lien vers le rendu](./index.html) (pensez à actualiser pour voir vos changements)
+[See the result of your code](./GamePage.elm) (don't forget to refresh to see changes)
 
+Once the tests are passing, you can go to the [next step](../Step13).
 
-<div style="text-align: right;"><a href="../Step13">Étape suivante --&gt;</a></div>

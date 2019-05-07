@@ -1,7 +1,8 @@
 module Step12.GamePage exposing (Question, gamePage, main, questionToDisplay)
 
-import Html exposing (Html, a, div, h2, iframe, li, text, ul)
-import Html.Attributes exposing (class, href, src, style)
+import Html exposing (Html, a, div, h2, li, text, ul)
+import Html.Attributes exposing (class, href)
+import Utils.Utils exposing (styles, testsIframe)
 
 
 type alias Question =
@@ -24,13 +25,15 @@ gamePage question =
 
 
 
-------------------------------------------------------------------------------------------------------------------------
--- You don't need to worry about the code below, it only displays the result of your code and the result of the tests --
-------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+-- Don't modify the code below, it displays the view and the tests and helps with testing your code --
+------------------------------------------------------------------------------------------------------
 
 
+main : Html msg
 main =
     div []
-        [ div [ class "jumbotron" ] [ gamePage questionToDisplay ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style "height" "500px" ] []
+        [ styles
+        , div [ class "jumbotron" ] [ gamePage questionToDisplay ]
+        , testsIframe
         ]
