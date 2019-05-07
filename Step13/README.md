@@ -1,11 +1,11 @@
-# Étape 13 : La page de jeu (suite)
+# Step 13: Game page
 
-## Objectif
+## Goal
 
-On sait maintenant afficher une question, on va maintenant récupérer la liste des questions sur l'API Trivia. 
-Par défaut, on va chercher cinq questions de catégories diverses, en limitant juste aux questions à choix multiple. Voici donc l'URL à contacter : `https://opentdb.com/api.php?amount=5&type=multiple`.
+We know how to display a question, now we need to get the list of questions from the Trivia API.
+By default, we will get 5 questions of any category, filtering to only keep multiple choices questions. This is the URL you will need to call: `https://opentdb.com/api.php?amount=5&type=multiple`.
 
-Le format de sortie est le suivant, comme vous pouvez le voir :
+As you can see, it returns an answer with the following format:
 
 ```js
 {
@@ -27,7 +27,7 @@ Le format de sortie est le suivant, comme vous pouvez le voir :
 }
 ```
 
-On n'a pas besoin de toutes les informations, puisque notre modèle contient seulement trois champs :
+We don't need all these informations, because our model contains only three fields:
 
 ```elm
 type alias Question =
@@ -37,12 +37,13 @@ type alias Question =
     }
 ```
 
-Attention par contre, notre `answers` ne correspond pas à la clé `incorrect_answers` du JSON, mais à la liste de toutes les réponses, bonne y compris. Pour cela, il faudra trouver un moyen de rajouter la bonne réponse à la liste lors du décodage ; [peut-être en cherchant dans la documentation du module `Decode`](http://package.elm-lang.org/packages/elm-lang/core/latest/Json-Decode)...
-Faites simple et ajoutez la bonne réponse au début de la liste des réponses. Cela signifie que la première réponse affichée sera toujours la bonne, mais nous corrigerons ce défaut un peu plus tard.
+Be careful, our `answers` field does not exactly match the `incorrect_answers` field of the JSON response, because it also contains the correct answer. That means you will need an extra step in the decoder to compute this field, maybe you will find a way in the [`Json.Decode` module documentation](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode)...
 
-## Un nouveau modèle
+Let's keep it simple by adding the correct answer at the head of the list, meaning that the first answer displayed will always be the correct one. We will fix that flaw later.
 
-Si vous regardez bien le code, on a un nouveau modèle :
+## A new model
+
+By looking at the code, you can see a new model:
 
 ```elm
 type alias Model =
@@ -55,14 +56,13 @@ type alias Game =
     }
 ```
 
-On remarque que les questions ont été mises dans un type Game, et séparées en deux : la question actuelle et les questions restantes (qui ne contient pas la question actuelle).
+As you can see, the questions have been stored inside a new `Game` type and are split in two: the current question and a list of remaining questions (that does not contain the current question).
 
-Ce choix peut sembler curieux, nous allons donc voir les alternatives pour comprendre ce qui nous a amené à le faire.
-
+This choice can seem weird, so let's see what are the alternatives to better understand it:
 
 ### Alternative 1
 
-La première alternative est la suivante :
+The first alternative is the following one:
 
 ```elm
 type alias Game =
@@ -71,10 +71,11 @@ type alias Game =
     }
 ```
 
-On stocke une liste de questions ainsi que l'index de la question courante. Si ce modèle est totalement fonctionnel, il pose cependant un énorme défaut : il est possible d'avoir des états dits "impossibles".
+We're keeping all the questions in a list and only storing the index of the current question. That model could work, but it has a main flaw: it's possible to represent **impossible states**.
 
-Par exemple, imaginons que pour une raison inconnue, on a 5 questions dans notre liste, et que l'index `currentQuestion` vaut 6. Cet état n'est pas possible et ne doit pas se produire dans l'application. Il faudrait donc faire toujours attention à ne pas modifier le modèle de façon à ce qu'il devienne incohérent. C'est un risque. 
-Le mieux serait d'éviter au maximum ces incohérences en construisant notre modèle de façon à ce qu'elles deviennent impossibles.
+For example, let's imagine that for an unknown reason, we have 5 questions in our list and that our `currentQuestion` index is 6. This state is not possible and should not happen in the application. That means we need to make sure that we will never set this value to an invalid number. What if we don't have to, because the model does not allow this? 
+
+If you look at the retained model, you can't have such an impossible case! 
 
 
 ### Alternative 2
@@ -85,42 +86,33 @@ type alias Game =
     }
 ```
 
-Ici, on stocke uniquement les questions restantes, la première étant la question courante. Une fois la question répondue, on la retire du tableau et la question en première position devient la question courante.
+Here, we're only keeping the remaining questions, and by convention the first one is the current question. Once this question has been answered, it is removed from the list and the next question become the current one.
 
-On corrige le problème de l'index non compris dans le tableau. Oui mais que se passe-t-il lorsque le tableau est vide ? Dans ce cas on n'a pas de question courante, ça ne peut vouloir dire qu'une chose : notre `Game` est terminé, et on ne devrait même pas être sur la page de jeu ! De nouveau, notre modèle peut être incohérent si une erreur est commise par le développeur !
+That way, we're not subject to the wrong index problem ; but what happens when the list is empty? We do not have a current question anymore, which means only one thing: our `Game` is finished and we should not even be on the game page!
+
+Once again, our model allow impossible states!
 
 
-### Notre solution
+### Our solution
 
-Avec notre solution, on a donc la question courante stockée à part, qui ne peut pas être nulle. On stocke également les questions restantes. Une fois la question courante répondue, on peut dépiler la première question restante et la mettre dans la variable `currentQuestion`. 
+With our solution, the current question is always defined and cannot be null. When we answer it, we can take the new current question from the list, and if it is empty, the Elm compiler will force us to handle the case! 
 
-Mais que se passe-t-il quand le tableau est vide ? Eh bien le compilateur va nous forcer à gérer le cas, et empêchera de lui-même un état incohérent !
-
-En Elm, **le système de types est puissant**, exploitez-le au maximum pour qu'il vous simplifie la vie !
+In Elm, **the type system is really powerful**, use it and it will ease your life!
 
 
 ## Instructions
 
-Assez de blabla, passons à la pratique ! Voici les instructions :
+No more talking, let's practice! Here is what you need to do:
 
- - Les questions doivent être chargées au chargement de le page
- - Tant qu'elles sont en cours de chargement, le texte "*Loading the questions...*" apparaît
- - Si une erreur se produit, le texte "*An unknown error occurred while loading the questions.*" apparaît
- - Une fois les questions chargées, la première question est affichée
+ - Load the questions at page load
+ - While they are loading, the text "*Loading the questions...*" should be displayed
+ - If there is an error, the text "*An unknown error occurred while loading the questions.*" should be displayed
+ - Once the questions are loaded, the first question is displayed
  
+
 
 ## Let's start!
 
-[Lien vers le rendu](./index.html) (pensez à actualiser pour voir vos changements)
+[See the result of your code](./GamePage.elm) (don't forget to refresh to see changes)
 
-
-<div style="text-align: right;"><a href="../Step14">Étape suivante --&gt;</a></div>
-
-
-
-
-
-
-
-
-
+Once the tests are passing, you can go to the [next step](../Step14).

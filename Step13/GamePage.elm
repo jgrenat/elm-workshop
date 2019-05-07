@@ -1,12 +1,10 @@
-module Step13.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), displayAnswer, displayTestsAndView, gamePage, init, main, questionsUrl, testableProgram, update, view)
+module Step13.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), displayAnswer, displayTestsAndView, gamePage, init, main, questionsUrl, update, view)
 
-import Json.Decode as Decode
-import Result exposing (Result)
-import Testable
-import Testable.Cmd
-import Testable.Html exposing (Html, a, div, h2, iframe, li, program, text, ul)
-import Testable.Html.Attributes exposing (class, src, style)
-import Testable.Http as Http
+import Browser
+import Html exposing (Html, a, div, h2, li, text, ul)
+import Html.Attributes exposing (class)
+import Http exposing (Error, expectJson)
+import Utils.Utils exposing (styles, testsIframe)
 
 
 questionsUrl : String
@@ -14,9 +12,14 @@ questionsUrl =
     "https://opentdb.com/api.php?amount=5&type=multiple"
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    testableProgram { init = init, update = update, view = displayTestsAndView, subscriptions = \model -> Sub.none }
+    Browser.element
+        { init = \_ -> init
+        , update = update
+        , view = displayTestsAndView
+        , subscriptions = \model -> Sub.none
+        }
 
 
 type alias Question =
@@ -38,7 +41,7 @@ type alias Game =
 
 
 type Msg
-    = None
+    = OnQuestionsFetched (Result Http.Error (List Question))
 
 
 type alias Category =
@@ -53,19 +56,19 @@ type RemoteData a
     | OnError
 
 
-init : ( Model, Testable.Cmd.Cmd Msg )
+init : ( Model, Cmd Msg )
 init =
-    ( Model Loading, Testable.Cmd.none )
+    ( Model Loading, Cmd.none )
 
 
-update : Msg -> Model -> ( Model, Testable.Cmd.Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        None ->
-            ( model, Testable.Cmd.none )
+        OnQuestionsFetched _ ->
+            ( model, Cmd.none )
 
 
-view : Model -> Testable.Html.Html Msg
+view : Model -> Html.Html Msg
 view model =
     div [] [ text "Content of the page" ]
 
@@ -89,25 +92,10 @@ displayAnswer answer =
 ------------------------------------------------------------------------------------------------------
 
 
-displayTestsAndView : Model -> Testable.Html.Html Msg
+displayTestsAndView : Model -> Html Msg
 displayTestsAndView model =
     div []
-        [ div [ class "jumbotron" ] [ view model ]
-        , iframe [ src "./Tests/index.html", class "mt-5 w-75 mx-auto d-block", style [ ( "height", "500px" ) ] ] []
+        [ styles
+        , div [ class "jumbotron" ] [ view model ]
+        , testsIframe
         ]
-
-
-testableProgram :
-    { init : ( model, Testable.Cmd.Cmd msg )
-    , update : msg -> model -> ( model, Testable.Cmd.Cmd msg )
-    , subscriptions : model -> Sub msg
-    , view : model -> Html msg
-    }
-    -> Program Never model msg
-testableProgram options =
-    program
-        { init = Testable.init options.init
-        , view = Testable.view options.view
-        , update = Testable.update options.update
-        , subscriptions = options.subscriptions
-        }

@@ -1,8 +1,9 @@
 module Step14.GamePage exposing (Category, Game, Model, Msg(..), Question, RemoteData(..), answersDecoder, correctAnswerDecoder, displayAnswer, gamePage, getQuestionsRequest, init, main, questionDecoder, questionsDecoder, questionsUrl, update, view)
 
-import Html exposing (Html, a, div, h2, li, program, text, ul)
-import Html.Attributes exposing (class, src, style)
-import Http
+import Browser
+import Html exposing (Html, a, div, h2, li, text, ul)
+import Html.Attributes exposing (class)
+import Http exposing (expectJson)
 import Json.Decode as Decode
 import Result exposing (Result)
 
@@ -12,9 +13,14 @@ questionsUrl =
     "https://opentdb.com/api.php?amount=5&type=multiple"
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    program { init = init, update = update, view = view, subscriptions = \model -> Sub.none }
+    Browser.element
+        { init = \_ -> init
+        , update = update
+        , view = view
+        , subscriptions = always Sub.none
+        }
 
 
 type alias Question =
@@ -53,22 +59,55 @@ type RemoteData a
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Loading, Http.send OnQuestionsFetched getQuestionsRequest )
+    ( Model Loading, getQuestionsRequest )
+
+
+getQuestionsRequest : Cmd Msg
+getQuestionsRequest =
+    Http.get
+        { url = questionsUrl
+        , expect = expectJson OnQuestionsFetched questionsDecoder
+        }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        OnQuestionsFetched (Ok (currentQuestion :: remainingQuestions)) ->
-            ( Model (Loaded (Game currentQuestion remainingQuestions)), Cmd.none )
+        OnQuestionsFetched (Ok (firstQuestion :: remainingQuestions)) ->
+            let
+                game =
+                    Game firstQuestion remainingQuestions
+            in
+            ( Model (Loaded game), Cmd.none )
 
         OnQuestionsFetched _ ->
             ( Model OnError, Cmd.none )
 
 
-getQuestionsRequest : Http.Request (List Question)
-getQuestionsRequest =
-    Http.get questionsUrl questionsDecoder
+view : Model -> Html Msg
+view model =
+    case model.game of
+        Loading ->
+            div [] [ text "Loading the questions..." ]
+
+        OnError ->
+            div [] [ text "An unknown error occurred while loading the questions" ]
+
+        Loaded game ->
+            gamePage game.currentQuestion
+
+
+gamePage : Question -> Html msg
+gamePage question =
+    div []
+        [ h2 [ class "question" ] [ text question.question ]
+        , ul [ class "answers" ] (List.map displayAnswer question.answers)
+        ]
+
+
+displayAnswer : String -> Html msg
+displayAnswer answer =
+    li [] [ a [ class "btn btn-primary" ] [ text answer ] ]
 
 
 questionsDecoder : Decode.Decoder (List Question)
@@ -96,29 +135,3 @@ answersDecoder =
         (::)
         correctAnswerDecoder
         (Decode.field "incorrect_answers" (Decode.list Decode.string))
-
-
-view : Model -> Html Msg
-view model =
-    case model.game of
-        Loading ->
-            text "Loading the questions..."
-
-        OnError ->
-            text "An unknown error occurred while loading the questions."
-
-        Loaded game ->
-            div [] [ gamePage game.currentQuestion ]
-
-
-gamePage : Question -> Html msg
-gamePage question =
-    div []
-        [ h2 [ class "question" ] [ text question.question ]
-        , ul [ class "answers" ] (List.map displayAnswer question.answers)
-        ]
-
-
-displayAnswer : String -> Html msg
-displayAnswer answer =
-    li [] [ a [ class "btn btn-primary" ] [ text answer ] ]
