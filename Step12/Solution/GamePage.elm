@@ -1,7 +1,8 @@
 module Step12.Solution.GamePage exposing (Question, displayAnswer, gamePage, main, questionToDisplay)
 
-import Html exposing (Html, a, div, h2, iframe, li, text, ul)
-import Html.Attributes exposing (class, href, src, style)
+import Html exposing (Html, a, div, h2, li, text, ul)
+import Html.Attributes exposing (class)
+import Utils.Utils exposing (styles)
 
 
 type alias Question =
@@ -12,7 +13,7 @@ type alias Question =
 
 
 questionToDisplay =
-    { question = "What won't we see in Elm?"
+    { question = "What doesn't exist in Elm?"
     , correctAnswer = "Runtime exceptions"
     , answers = [ "Runtime exceptions", "JSON", "Single page applications", "Happy developers" ]
     }
@@ -33,7 +34,15 @@ displayAnswer answer =
         ]
 
 
+
+------------------------------------------------------------------------------------------------------
+-- Don't modify the code below, it displays the view and the tests and helps with testing your code --
+------------------------------------------------------------------------------------------------------
+
+
+main : Html msg
 main =
     div []
-        [ div [ class "jumbotron" ] [ gamePage questionToDisplay ]
+        [ styles
+        , div [ class "jumbotron" ] [ gamePage questionToDisplay ]
         ]
