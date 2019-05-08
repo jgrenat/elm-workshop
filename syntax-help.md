@@ -11,22 +11,37 @@
 ## Basic types
 
 ```elm
-True : Bool False : Bool
-13 : number -- Int or Float depending on usage 4.2 : Float
-"hello world" : String 'a' : Char
-String manipulation
+True : Bool 
+False : Bool
+
+13 : number -- Int or Float depending on usage 
+4.2 : Float
+
+"hello world" : String 
+'a' : Char
+```
+
+## String manipulation
+
+```elm
 "hello" ++ " world" -- Concatenation
-"age: " ++ (toString 42) -- Concatenation with numbers
-Functions
+"age: " ++ (String.fromInt 42) -- Concatenation with numbers
+```
+
+## Functions
+
+```elm
 add a b = a + b -- Definition
 add 3 5 -- Example of use, returns 8
-anotherAdd = (\a b -> a + b) -- Lambda / anonymous function anotherAdd 3 5 -- Returns 8
+
+anotherAdd = (\a b -> a + b) -- Lambda / anonymous function 
+anotherAdd 3 5 -- Returns 8
 ```
 
 ## Lists
        
 ```elm   
- ["elem1", "elem2"]
+["elem1", "elem2"]
 1 :: [2,3,4] -- Equals [1, 2, 3, 4]
 List.map (\a -> a * 2) [1, 2, 3, 4] -- Equals [2, 4, 6, 8]
 ```
