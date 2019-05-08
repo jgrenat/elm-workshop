@@ -10,6 +10,7 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text)
 import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
 import Url exposing (Protocol(..), Url)
+import Utils.Utils exposing (testStyles)
 
 
 type Msg
@@ -22,7 +23,8 @@ main =
         testsView key =
             Document
                 "Tests for step 10"
-                [ viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) (suite key)
+                [ testStyles
+                , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) (suite key)
                 ]
 
         init _ _ key =

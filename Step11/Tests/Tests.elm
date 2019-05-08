@@ -2,17 +2,21 @@ module Step11.Tests.Tests exposing (suite)
 
 import Expect exposing (Expectation)
 import Fuzz
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Random
 import Step11.ParsingRoute exposing (Page(..), RemoteData(..), parseUrlToPageAndCommand)
 import Test exposing (Test, concat, fuzz, test)
 import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
 import Url exposing (Protocol(..), Url)
+import Utils.Utils exposing (testStyles)
 
 
 main : Html msg
 main =
-    viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
+    div []
+        [ testStyles
+        , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
+        ]
 
 
 fakeHomeUrl : Url

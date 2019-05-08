@@ -2,7 +2,7 @@ module Step09.Tests.Tests exposing (main)
 
 import Expect exposing (Expectation)
 import Fuzz
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -12,6 +12,7 @@ import Test exposing (Test, concat, fuzz, test)
 import Test.Html.Selector as Selector exposing (Selector)
 import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
 import TestContext exposing (SimulatedEffect(..), TestContext, createWithSimulatedEffects, expectModel, expectViewHas, simulateLastEffect, update)
+import Utils.Utils exposing (testStyles)
 
 
 categoriesUrl : String
@@ -31,7 +32,10 @@ categoriesPageProgram =
 
 main : Html a
 main =
-    viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
+    div []
+        [ testStyles
+        , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
+        ]
 
 
 suite : Test

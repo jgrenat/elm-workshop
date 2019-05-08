@@ -33,10 +33,6 @@ categories =
     ]
 
 
-type alias Category =
-    { id : Int, name : String }
-
-
 main : Html msg
 main =
     span []

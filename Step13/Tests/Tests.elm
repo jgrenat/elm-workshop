@@ -2,7 +2,7 @@ module Step13.Tests.Tests exposing (main)
 
 import Expect
 import Fuzz
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Http exposing (Error(..))
 import Random
 import Step13.GamePage as GamePage exposing (Game, Model, Msg(..), Question, RemoteData(..))
@@ -10,6 +10,7 @@ import Test exposing (Test, concat, fuzz, test)
 import Test.Html.Selector as Selector
 import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
 import TestContext exposing (SimulatedEffect(..), TestContext, createWithSimulatedEffects, expectModel, expectViewHas, simulateLastEffect)
+import Utils.Utils exposing (testStyles)
 
 
 questionsUrl : String
@@ -29,7 +30,10 @@ gamePageProgram =
 
 main : Html a
 main =
-    viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) testsSuite
+    div []
+        [ testStyles
+        , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) testsSuite
+        ]
 
 
 testsSuite : Test
