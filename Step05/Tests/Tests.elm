@@ -2,19 +2,23 @@ module Step06.Tests.Tests exposing (eachCategoryHasItsNameDisplayed, everyCatego
 
 import Expect exposing (fail)
 import Fuzz exposing (intRange)
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Html.Attributes
 import Random
 import Step05.CategoriesPage exposing (Category, categories, categoriesPage)
 import Test exposing (Test, concat, fuzz, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, class, classes, tag, text)
-import Test.Runner.Html exposing (defaultConfig, viewResults)
+import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
+import Utils.Utils exposing (testStyles)
 
 
 main : Html a
 main =
-    viewResults (Random.initialSeed 1000 |> defaultConfig) suite
+    div []
+        [ testStyles
+        , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
+        ]
 
 
 suite : Test

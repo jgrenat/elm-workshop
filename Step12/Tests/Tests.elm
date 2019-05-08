@@ -2,18 +2,22 @@ module Step12.Tests.Tests exposing (main)
 
 import Expect exposing (Expectation)
 import Fuzz
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Random
 import Step12.GamePage exposing (Question, gamePage)
 import Test exposing (Test, concat, fuzz)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (Selector, class, classes, tag, text)
 import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
+import Utils.Utils exposing (testStyles)
 
 
 main : Html msg
 main =
-    viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) testsSuite
+    div []
+        [ testStyles
+        , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) testsSuite
+        ]
 
 
 testsSuite : Test

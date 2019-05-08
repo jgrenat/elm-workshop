@@ -1,4 +1,4 @@
-module Utils.Utils exposing (styles, testsIframe)
+module Utils.Utils exposing (styles, testStyles, testsIframe)
 
 import Html exposing (Html, div, iframe, node)
 import Html.Attributes exposing (href, rel, src, style)
@@ -31,3 +31,12 @@ styles =
             ]
             []
         ]
+
+
+testStyles : Html a
+testStyles =
+    node "link"
+        [ rel "stylesheet"
+        , href "/Utils/test-style.css"
+        ]
+        []

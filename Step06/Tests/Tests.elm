@@ -1,7 +1,7 @@
 module Step06.Tests.Tests exposing (main)
 
 import Expect
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Html.Attributes exposing (type_)
 import Random
 import Step06.UserStatus exposing (initialModel, update, view)
@@ -9,12 +9,16 @@ import Test exposing (Test, concat, test)
 import Test.Html.Event as Event
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, text)
-import Test.Runner.Html exposing (defaultConfig, viewResults)
+import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
+import Utils.Utils exposing (testStyles)
 
 
 main : Html a
 main =
-    viewResults (Random.initialSeed 1000 |> defaultConfig) suite
+    div []
+        [ testStyles
+        , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
+        ]
 
 
 suite : Test

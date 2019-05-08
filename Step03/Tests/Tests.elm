@@ -1,18 +1,22 @@
 module Step03.Tests.Tests exposing (main)
 
 import Fuzz exposing (intRange)
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Random
 import Step03.ResultPage exposing (resultPage)
 import Test exposing (Test, concat, fuzz, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (tag, text)
-import Test.Runner.Html exposing (defaultConfig, viewResults)
+import Test.Runner.Html exposing (defaultConfig, hidePassedTests, viewResults)
+import Utils.Utils exposing (testStyles)
 
 
 main : Html a
 main =
-    viewResults (Random.initialSeed 1000 |> defaultConfig) suite
+    div []
+        [ testStyles
+        , viewResults (Random.initialSeed 1000 |> defaultConfig |> hidePassedTests) suite
+        ]
 
 
 suite : Test
