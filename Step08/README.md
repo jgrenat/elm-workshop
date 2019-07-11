@@ -1,4 +1,4 @@
-# Step 9: Categories List (part 2)
+# Step 8: Categories List (part 2)
 
 ## Goal
 
