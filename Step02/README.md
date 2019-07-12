@@ -10,7 +10,7 @@ Belo‹ you can see the HTML structure that is expected:
 
 ```html
 <div class="score">
-    <p>Your score: 3 / 5</p>
+    <h1>Your score: 3 / 5</h1>
     <a class="btn btn-primary" href="#">Replay</a>
 </div>
 ```

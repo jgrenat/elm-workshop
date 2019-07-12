@@ -17,9 +17,3 @@ Be careful where you will store the `Game` object inside your model, it should o
 [See the result of your code](./Main.elm) (don't forget to refresh to see changes)
 
 Once the tests are passing, you can go to the [next step](../Step15).
-
-
-
-
-
-

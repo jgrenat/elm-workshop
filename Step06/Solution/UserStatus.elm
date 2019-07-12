@@ -7,7 +7,7 @@ import Html.Events exposing (onClick)
 
 
 main =
-    Browser.sandbox { init = initialModel, view = view, update = update }
+    Browser.sandbox { init = initialModel, update = update, view = view }
 
 
 type UserStatus
