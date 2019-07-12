@@ -17,7 +17,7 @@ Install a plugin for your editor to be able to understand Elm. You can find some
  - [Webstorm / IntelliJ](https://github.com/klazuka/intellij-elm)
  - [Sublime Text](https://packagecontrol.io/packages/Elm%20Language%20Support)
  - [Vim](https://github.com/ElmCast/elm-vim)
- - [VS Code](https://github.com/sbrink/vscode-elm)
+ - [VS Code](https://marketplace.visualstudio.com/items?itemName=Elmtooling.elm-ls-vscode)
 
 If you don't want to set up a dev environment, you can use the Ellie online editor – a link will be provided at each step.
 
