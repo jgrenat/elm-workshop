@@ -1,4 +1,4 @@
-module Step06.Tests.Tests exposing (eachCategoryHasItsNameDisplayed, everyCategoriesAreDisplayed, getCategory, listOfCategoriesIsPresent, replayLinkShouldHaveProperClasses, replayLinkShouldHaveProperLink, suite, titleIsPresentWithProperText)
+module Step05.Tests.Tests exposing (eachCategoryHasItsNameDisplayed, everyCategoriesAreDisplayed, getCategory, listOfCategoriesIsPresent, replayLinkShouldHaveProperClasses, replayLinkShouldHaveProperLink, suite, titleIsPresentWithProperText)
 
 import Expect exposing (fail)
 import Fuzz exposing (intRange)
