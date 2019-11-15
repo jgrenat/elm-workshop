@@ -1,4 +1,4 @@
-module Step11.Tests.Tests exposing (suite)
+module Step10.Tests.Tests exposing (suite)
 
 import Browser exposing (Document, UrlRequest(..))
 import Browser.Navigation exposing (Key)

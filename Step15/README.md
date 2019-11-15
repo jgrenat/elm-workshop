@@ -1,40 +1,21 @@
-# Étape 15 : Défiler les questions
+# Step 15: Run the Game!
 
-## Objectif
+## Goal
 
-Notre page de jeu est maintenant intégrée à l'ensemble ! Si vous n'avez pas stocké votre `Game` directement dans la route, prenez le temps de regarder le code dans cette étape pour voir comment nous avons procédé.
-Garder le jeu dans la route permet de conserver la cohérence de notre modèle.
-
-Nous allons maintenant autoriser l'utilisateur à répondre aux questions et à voir son score !
+Now that the game page is integrated to  everything else, we can go back to it and allow the user to answer the questions and get its score!
 
 ## Instructions
 
- - Quand un utilisateur clique sur une réponse, il passe à la question suivante et son résultat pour cette question est stocké dans le modèle.
- Attention, pas de changement de page ici, on utilise le même procédé que dans le compteur à l'étape 1 !
- 
- - Une fois une question répondue, l'utilisateur passe à la page suivante
- 
- - Quand toutes les questions ont été répondues, l'utilisateur est redirigé vers `#result/{son-score}`
- 
- 
-## Un fichier moins *chargé*
-
-Comme vous pouvez le voir, on a ici plusieurs fichiers. Les méthodes ont en effet été extraites dans plusieurs fichiers différents correspondant à leur fonction. On a ainsi séparé les types, les méthodes d'affichage, la fonction d'update, ce qui concerne le routing et les appels d'API. 
-
-Cette séparation est suffisante pour un petit projet comme le nôtre. Sur des projets plus gros, on pourrait par exemple avoir une approche orientée composants avec un composant par page.
+ - When a use click on a response, the next question is displayed and its result is stored inside the model. 
+ - When all questions have been answered, the user is redirected to the `#result/{score}` page.
 
 ## Let's start!
 
-[Lien vers le rendu](./index.html) (pensez à actualiser pour voir vos changements)
+[See the result of your code](./Main.elm) (don't forget to refresh to see changes)
 
+Once the tests are passing, you are done with this workshop!
 
-<div style="text-align: right;"><a href="../Step15">Étape suivante --&gt;</a></div>
+However you can add some things to your application:
 
-
-
-
-
-
-
-
-
+ - Shuffle the answers because now the first one is always the correct one
+ - Save the score inside the local storage (search for how to use `ports`)

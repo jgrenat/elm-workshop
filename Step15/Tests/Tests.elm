@@ -6,14 +6,10 @@ import Fuzz exposing (intRange)
 import Http exposing (Error(..))
 import Json.Encode as Encode
 import Step15.Main exposing (init)
-import Step15.Types exposing (AnsweredQuestion, Game, Model, Msg(..), Question, QuestionStatus(..), RemoteData(..), Route(..))
-import Step15.Update exposing (update)
-import Step15.View exposing (view)
-import Test exposing (Test, describe, fuzz, test)
+import Test exposing (Test, concat, describe, fuzz, test)
 import Test.Html.Event exposing (Event, click, simulate, toResult)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (tag, text)
-import Test.Runner.Html exposing (run)
 
 
 fakeGameLocation =
@@ -42,13 +38,12 @@ questionsUrl =
 
 
 main =
-    describe "What we expect:"
+    concat
         [ whenQuestionsAreLoadedTheFirstQuestionShouldBeDisplayed
         , afterClickingTheProperAnswerTheModelShouldBeUpdated
         , afterClickingTheWrongAnswerTheModelShouldBeUpdated
         , afterAnsweringLastQuestionWeShouldBeRedirectedToResult
         ]
-        |> run
 
 
 initialModel =
