@@ -36,8 +36,9 @@ import Html exposing (Html, button, span, text, div)
 import Html.Events exposing (onClick)
 
 
--- Here we declare app through the function `Browser.sandbox` with an initial model (the Int `O`), 
--- a `view` function and an `update` fonction
+-- Here we declare app through the function `Browser.sandbox` 
+-- with an initial model (the Int `O`), a `view` function and 
+-- an `update` fonction
 main =
     Browser.sandbox { init = 0, view = view, update = update }
 
@@ -97,13 +98,13 @@ user.name;
 let myFunction = undefined;
 myFunction();
 // Uncaught TypeError: myFunction is not a function
-``` 
+```
 
 It's really difficult with JavaScript to not have these errors in production, because of the dynamic nature of the language. Elm has decided to avoid having `null` or `undefined`. 
 
-Then how do we represent an empty value? We can do that by using a [union type](https://guide.elm-lang.org/types/union_types.html) `UserStatus` that can have three values: `NotSpecified`, `UnderAge` and `Adult`. The advantage here is that the compiler will force you to handle every possible cases!
+Then how do we represent an empty value? We can do that by using a [custom type](https://guide.elm-lang.org/types/custom_types.html) `UserStatus` that can have three values: `NotSpecified`, `UnderAge` and `Adult`. The advantage here is that the compiler will force you to handle every possible cases!
 
-With the help of a `case...of` (we've already seen it within the counter example) nwe can then display a message according to the value. A little example below on another use case:
+With the help of a `case...of` (we've already seen it within the counter example) we can then display a message according to the value. A little example below on another use case:
 
 ```elm 
 type ShirtSize = Large | Medium | Small

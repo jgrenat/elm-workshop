@@ -77,6 +77,12 @@ parseUrlToPageAndCommand url =
     ( HomePage, Cmd.none )
 
 
+
+------------------------------------------------------------------------------------------------------
+-- Don't modify the code below, it displays the view and the tests and helps with testing your code --
+------------------------------------------------------------------------------------------------------
+
+
 view : Html Msg
 view =
     div []
@@ -123,10 +129,11 @@ displayPage ( page, cmd ) =
             else
                 "with no command"
     in
-    pageString
-        ++ " "
-        ++ commandString
-        |> text
+    text
+        (pageString
+            ++ " "
+            ++ commandString
+        )
 
 
 getCategoriesUrl : String
@@ -147,12 +154,6 @@ getCategoriesRequest =
         { url = getCategoriesUrl
         , expect = expectJson OnCategoriesFetched categoriesDecoder
         }
-
-
-
-------------------------------------------------------------------------------------------------------
--- Don't modify the code below, it displays the view and the tests and helps with testing your code --
-------------------------------------------------------------------------------------------------------
 
 
 displayTestsAndView : Html Msg

@@ -6,7 +6,7 @@ We will now create the results page. This is a really simple one but it will all
 
 ![Screenshot of the expected result](../Utils/images/step3.png)
 
-Belo‹ you can see the HTML structure that is expected:
+Below you can see the HTML structure that is expected:
 
 ```html
 <div class="score">
@@ -22,7 +22,7 @@ You can now open in your IDE the file `./ResultPage.elm` and start to code!
 
 ## Some hints
 
-Be careful, this time all the exports needed are not done, you will need to add some functions to the imports lists at the beginning of the file! No surprise, the names are the same than the tags you want to use in HTML!
+Be careful, this time all the imports needed are not done, you will need to add some functions to the imports lists at the beginning of the file! No surprise, the names are the same than the tags you want to use in HTML!
 
 ```elm
 -- Add your imports below
@@ -31,7 +31,7 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 ```
 
-As we've said before, you will need to use the argument `page` given to your function `resultPage`. This is an `Int` and you will need to convert it to a `String` to display it. 
+As we've said before, you will need to use the argument `score` given to your function `resultPage`. This is an `Int` and you will need to convert it to a `String` to display it. 
 
 Maybe you can find a helpful function [on this page](https://package.elm-lang.org/packages/elm/core/latest/String). (*There is no need to import the module `Basics`, it's already imported by default in your Elm programs.*)
 

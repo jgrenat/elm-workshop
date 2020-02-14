@@ -82,7 +82,7 @@ myUserWithChangedPassword.password -- Returns "M0r3Secr3T"
 
 ```elm
 -- Type alias
-type alias User = { username = String, password = String }
+type alias User = { username : String, password : String }
 
 -- Gives you a "constructor" function 'User'
 User "Marcus" "Secr3T" == { username = "Marcus", password = "Secr3T" }
@@ -159,4 +159,3 @@ Qualified imports are preferred. Module names must match their file name, so mod
 ## Type Annotations
 
 You can learn more about type annotations [here](https://guide.elm-lang.org/types/reading_types.html#type-annotations).
-   

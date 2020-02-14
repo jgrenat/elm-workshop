@@ -16,7 +16,7 @@ categories =
 
 By looking at the type annotation, we can see that it's a list of elements, which are of type `Category`... but this type doesn't exist! This will be your mission for this step: make the code compile by creating the `Category` type.
 
-It should contains two fields:
+It should contain two fields:
 
  - `id` of type `Int`
  - `name` of type `String`
@@ -27,7 +27,7 @@ It should contains two fields:
 If you don't remember how to create a new type, here are two links to the documentation. 
 Be careful, there are two ways to declare a type which are not equivalent, choose wisely!
 
- - [Union Types](https://guide.elm-lang.org/types/union_types.html)
+ - [Custom Types](https://guide.elm-lang.org/types/custom_types.html)
  - [Type Aliases](https://guide.elm-lang.org/types/type_aliases.html)
   
 

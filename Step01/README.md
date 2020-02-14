@@ -2,7 +2,7 @@
 
 Great, your environment is now working! If that's not the case, read again the main [README](../README.md) and feel free to ask me for help! 
 
-Now, you should be reading this on the url http://localhost:8000/Step02/. The interface you are seeing is powered by Elm Reactor, a tool to quickly have a dev environment started. The only drawback is that it does not handle auto-refresh, and you'll have to refresh yourself to see changes.
+Now, you should be reading this on the url http://localhost:8000/Step01/. The interface you are seeing is powered by Elm Reactor, a tool to quickly have a dev environment started. The only drawback is that it does not handle auto-refresh, and you'll have to refresh yourself to see changes.
 
 The goal of this workshop is to create a quiz game based on the Trivia API. A few questions are retrieved from the API and the user can answer to them. A working version can be found here: https://trivia-game.surge.sh/
 

@@ -2,7 +2,7 @@
 
 ## Goal
 
-We now have the categories list as a `String`, but we need to it as a `List Category`. That's exactly what we will achieve in this step!
+We now have the categories list as a `String`, but we need it as a `List Category`. That's exactly what we will achieve in this step!
 
 
 ## JSON Decoders
@@ -29,7 +29,7 @@ userDecoder : Decode.Decoder User
 userDecoder =
     Decode.map2 
         User 
-        (Decode.field "firstname" Decode.int) 
+        (Decode.field "firstname" Decode.string) 
         (Decode.field "birthYear" Decode.int)
 ```
 
@@ -58,7 +58,7 @@ As you can see, this function returns a `Result`, so you have to handle the case
 
 You have now all the elements to decode our `String` into a `List Category`, but here are a few tips:
 
- - By replacing [`Http.expectString`](https://package.elm-lang.org/packages/elm/http/latest/Http#expectString) by [`Http.get`](https://package.elm-lang.org/packages/elm/http/latest/Http#expectString), you can directly provide a `Decoder` as the second argument to decode the received body  
+ - By replacing [`Http.expectString`](https://package.elm-lang.org/packages/elm/http/latest/Http#expectString) by [`Http.expectJson`](https://package.elm-lang.org/packages/elm/http/latest/Http#expectJson), you can directly provide a `Decoder` as the second argument to decode the received body  
  - We are not decoding a single category, but a list of categories. Explore the [`Json.Decode`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode) documentation to find a function that could help!
  - Be careful, if you look at the response body, our categories list is inside a field `trivia_categories`: `{ "trivia_categories": [...] }`. You will need to indicate that in your decoder:
 

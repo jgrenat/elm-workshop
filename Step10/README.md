@@ -9,9 +9,9 @@ When we're talking about *navigation* in a classic Single Page Application, it m
 
 This is possible by handling these three things:
 
- - When the page load, we need to analyze the initial URL to display the proper page
- - When the user click on a link, we need to change the URL (= adding an entry to the browser history)
- - When the URL change, we need to display the proper page
+ - When the page loads, we need to analyze the initial URL to display the proper page
+ - When the user clicks on a link, we need to change the URL (= adding an entry to the browser history)
+ - When the URL changes, we need to display the proper page
  
 This is quite easy to do with Elm, but we will need to use a more advanced program than `Browser.element`. The `Browser.navigation` program allows us these three things. Let's see how we can declare such a program:
 
@@ -80,7 +80,7 @@ After that, you need to handle a few things:
  
 __Small reminder:__ if during init or `OnUrlChange` the new page is the categories page, you also need to load the categories!
 
-__Notice:__ we will navigate using hash strategy, that means our URLs will be `http://localhost:8080/` and `http://localhost:8080/#categories`. Because of that, you need to react to the `fragment` part of the `URL` object.
+__Notice:__ we will navigate using hash strategy, that means our URLs will be `http://localhost:8000/` and `http://localhost:8080/#categories`. Because of that, you need to react to the `fragment` part of the `URL` object.
 
 ## Let's start!
 

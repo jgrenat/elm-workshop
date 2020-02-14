@@ -13,7 +13,7 @@ This function `sandbox` is in fact the most basic kind of web application you ca
 
 
  - `Browser.element` allows you to have _side effects_ like random numbers and to interact with the outside world (for example JavaScript code or HTTP requests). This is usually used to embed Elm parts inside an existing JavaScript application   
- - `Brower.document` allows you the same plus controlling the title of the page and the `body` entirely.
+ - `Browser.document` allows you the same plus controlling the title of the page and the `body` entirely.
  - `Browser.application` allows you the same things than `Browser.document` and allows you to manages changes to the URL. 
  
 The part about _side effects_ needs more explanations. Indeed, in Elm, every functions are pure. That means that their return value only depends on its parameters and that they can't alter anything outside their scope. 
@@ -45,7 +45,7 @@ Random.generate OnNumberGenerated (Random.int 0 10)
 
 `Random.generate` creates a command to generate a random value. The second argument `Random.int 0 10` specify that we want an `Int` between 0 and 10. The first argument `OnNumberGenerated` is the message used by the Elm runtime to return the result to our `update` function.
 
-That's exactly what happens near `(6)`, we receive the generated value and store it inside ou model. There is no need for another side effect, so we can also return `Cmd.none`.
+That's exactly what happens near `(6)`, we receive the generated value and store it inside our model. There is no need for another side effect, so we can also return `Cmd.none`.
 
 
 ## Let's start!
